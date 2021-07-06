@@ -1,6 +1,9 @@
 // Import express module
 const express = require('express');
 
+// Import helmet to secure Express app by setting various HTTP headers
+const helmet = require("helmet");
+
 // Access to the path of our file system
 const path = require('path');
 
@@ -26,6 +29,8 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Secure Express
+app.use(helmet());
 
 // Middleware which allows you to load the files in the images directory
 app.use('/images', express.static(path.join(__dirname, 'images')));
