@@ -9,14 +9,14 @@
   "test": {
     "username": "root",
     "password": null,
-    "database": "test",
+    "database": "projet7",
     "host": "localhost",
     "dialect": "mysql"
   },
   "production": {
     "username": "root",
     "password": null,
-    "database": "production",
+    "database": "projet7",
     "host": "localhost",
     "dialect": "mysql"
   }
