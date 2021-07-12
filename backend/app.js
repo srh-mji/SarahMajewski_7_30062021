@@ -14,6 +14,9 @@ const postRoutes = require('./routes/post');
 // Create express application
 const app = express();
 
+// Connect to database
+const db = require("./models")
+db.sequelize.sync()
 
 // Middleware Header which unblocks some CORS security systems error
 app.use((req, res, next) => {
