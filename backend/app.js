@@ -1,13 +1,15 @@
 // Import express module
 const express = require('express');
 
+// Import helmet to secure Express app by setting various HTTP headers
+const helmet = require("helmet");
+
 // Access to the path of our file system
 const path = require('path');
 
 // // Routes declaration
-// const userRoutes = require('./routes/user');
-// const postRoutes = require('./routes/post');
-// const commentRoutes = require('./routes/comment');
+const userRoutes = require('./routes/user');
+const postRoutes = require('./routes/post');
 
 // Create express application
 const app = express();
@@ -26,14 +28,15 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Secure Express
+app.use(helmet());
 
 // Middleware which allows you to load the files in the images directory
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
 // // Middleware transmit requests to these urls to the corresponding routes
-// app.use('/api/user', userRoutes);
-// app.use('/api/post', postRoutes);
-// app.use('/api/comment', commentRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api/post', postRoutes);
 
 // Export of the express application for declaration in server.js
 module.exports = app;
