@@ -16,11 +16,20 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
+        image: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        biography: {
+          type: DataTypes.STRING,
+          allowNull: true,
+        }
       });
     // Sequelize association to create a connection between User model & Post model
       User.associate = function(models) {
         // associations can be defined here
-        models.User.hasMany(models.Post)
+        models.User.hasMany(models.Post);
+        models.User.hasMany(models.Comment);
       };
 
       return User
