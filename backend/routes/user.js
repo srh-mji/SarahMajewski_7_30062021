@@ -7,9 +7,6 @@ const router = express.Router();
 const userCtrl = require('../controllers/user');
 
 // Add middleware
-// For password and email verification
-const validUser = require('../middleware/validUser');
-
 // For authentification (secure the roads)
 const auth = require('../middleware/auth');
 
@@ -17,8 +14,8 @@ const auth = require('../middleware/auth');
 const multer = require('../middleware/multer-config');
 
 // Creation of the different routes of the API
-router.post('/signup', validUser.valid, userCtrl.signup);
-router.post('/login', validUser.valid, userCtrl.login);
+router.post('/signup', userCtrl.signup);
+router.post('/login', userCtrl.login);
 router.get('/profil', auth, userCtrl.getAllUsers);
 router.put('/profil/:id', auth, multer, userCtrl.updateProfil);
 router.get('/profil/.id', auth, userCtrl.getProfil);
