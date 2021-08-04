@@ -1,11 +1,14 @@
 // Get bcrypt for hash password
 const bcrypt = require('bcrypt');
-
-// Get models
-const db = require("../models")
+// GetemailValidator for email check
+const emailValidator = require("email-validator");
+// Get passwordValidator for password check
+const passwordValidator = require("password-validator");
 
 // Get user model
-const User = require('../models/user');
+const {
+  User
+} = require("../models")
 
 // Get jsonwebtoken for assign a token to a user when they connect
 const jwt = require('jsonwebtoken');
@@ -13,87 +16,94 @@ const jwt = require('jsonwebtoken');
 // Get file system for image downloads and modifications
 const fs = require('fs');
 
+// Create passwordSchema for more secure password
+const passwordSchema = new passwordValidator();
+// Password constraints
+passwordSchema
+.is().min(8)
+.has().uppercase()
+.has().lowercase()
+.has().digits()
+.has().not().spaces()
+.is().not().oneOf(['Passw0rd', 'Password123']);
+
+
 // Middleware that create a new user
 exports.signup = (req, res, next) => {
-  const {
-    name,
-    email,
-    password
-  } = req.body;
-  if (user !== null) {
-    if (user.email === req.body.email) {
-      return res.status(400).json({
-        error: "cet email est déjà utilisé"
-      });
-    }
+  if (!req.body.name || !req.body.email || !req.body.password) {
+    return res.status(400).json({ error: "Les champs doivent être remplis" });
+}
+if (emailValidator.validate(req.body.email)) {
+  if(passwordSchema.validate(req.body.password)) {
+      bcrypt.hash(req.body.password, 10)
+          .then(hash => {
+              const user = {
+                name: req.body.name,
+                email: req.body.email,
+                password: hash,
+              };
+              User.create(user)
+                  .then(user => {
+                    res.status(200).json({
+                      userId: user._id,
+                      token: jwt.sign(
+                        { userId: user._id },
+                        'RANDOM_TOKEN_SECRET',
+                        { expiresIn: '24h' }
+                      )
+                    });
+                  })
+                  .catch(error => res.status(400).json({ error }));
+              })
+          .catch(error => res.status(500).json({ error }));
   } else {
-    bcrypt.hash(req.body.password, 10)
-      .then(hash => {
-        const user = new User({
-          name: req.body.name,
-          email: req.body.email,
-          password: hash,
-        });
-        user.save()
-          .then(() => res.status(201).json({
-            message: "Utilisateur créé !"
-          }))
-          .catch(error => res.status(401).json({
-            error
-          }))
-      })
-      .catch(error => res.status(500).json({
-        error
-      }))
+      res.status(401).json({ error: "Mot de passe requis : 8 caractères minimun, 1 Majuscule, 1 minuscule, sans espaces." });
   }
+} else {
+  res.status(401).json({ error: "Vérifier que votre email est valide" });
+}
 };
-
 // Middleware for user login 
-exports.login = (req, res, next) => {
-  // check if user email is in database
-  User.findOne({
-    where: {
-      email: req.body.email
-    }
-  });
 
-  if (user === null) {
-    return res.status(403).send({
-      error: "Connexion échouée"
-    });
-  }
-  // compare passwords
-  bcrypt.compare(req.body.password, user.password)
-    .then(valid => {
-      if (!valid) {
-        return res.status(401).json({
-          error: 'Mot de passe incorrect !'
+exports.login = (req, res, next) => {
+  // check if field password is empty
+  if (!req.body.password) {
+    return res.status(400).json({ error: "Les champs doivent être remplis" });
+}
+  // check if user email is in database
+  if (passwordSchema.validate(req.body.password)) {
+    User.findOne({ where: { email: req.body.email } })
+        .then(user => {
+            if (user) {
+                bcrypt.compare(req.body.password, user.password)
+                    .then(valid => {
+                        if (!valid) {
+                            res.status(401).json({ error: "Mot de passe incorrect !" });
+                        } else {
+                          res.status(200).json({
+                            userId: user._id,
+                            token: jwt.sign(
+                              { userId: user._id },
+                              'RANDOM_TOKEN_SECRET',
+                              { expiresIn: '24h' }
+                            )
+                          });
+                        }
+                    })
+                    .catch(error => res.status(500).json({ error }));
+            } else {
+                res.status(401).json({ error: "Connexion refusée" });
+            }
         })
-      }
-      // returns user and token
-      res.status(200).json({
-        message: "Connexion réussie",
-        userId: user.id,
-        token: jwt.sign({
-            userId: user.id
-          },
-          'RANDOM_TOKEN_SECRET', {
-            expiresIn: '24h'
-          }
-        )
-      })
-    })
-    .catch(error => res.status(501).json({
-      error
-    }))
-    .catch(error => res.status(502).json({
-      error
-    }));
+        .catch(error => res.status(500).json({ error }))
+} else {
+    res.status(401).json({ error: "Mot de passe incorrect !" });
+}
 };
 
 // Middleware to get user profil 
 exports.getProfil = (req, res, next) => {
-  User.findOne({
+  const user = User.findOne({
       where: {
         id: req.params.id
       }
