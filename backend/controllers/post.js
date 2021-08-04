@@ -1,8 +1,5 @@
 // Get models
-const db = require("../models")
-
-// Get post model
-const Post = require('../models/post');
+const {Post} = require("../models")
 
 // Get comment model
 const Comment = require('../models/comment');
