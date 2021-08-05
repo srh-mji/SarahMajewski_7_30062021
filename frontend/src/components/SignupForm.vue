@@ -30,6 +30,7 @@
                 <label for="password">Mot de passe </label>
                 <input type="password" class="form-control" v-model="password" id="password" placeholder="Entrez votre mot de passe" minlength="8" maxlength="25" required>
             </div>
+            <div class="errorMessage">{{message}}</div>
             <button  type="submit"> Envoyer </button>
          </form>
     </div>
@@ -53,9 +54,9 @@ export default {
         signup(){
             axios.post(`http://localhost:3000/api/user/signup`,
                     {
-                        'Name' : this.name,
-                       'Password' : this.password,
-                        'Email' : this.email,
+                        'name' : this.name,
+                       'password' : this.password,
+                        'email' : this.email,
                     },
                     {
                         headers: {
@@ -64,13 +65,12 @@ export default {
                     }
                 )
                 .then(res => {
-                    if(res.status === 201) {
-                         location.href = '/';
-                    }
-                })
+                localStorage.setItem('user', JSON.stringify(res.data));
+                location.href = '/';
+            })
                 .catch((error) => {
                     if (error.response.status === 401) {
-                        this.message = "Email non disponible.";
+                        this.message = "E-mail non disponible.";
                     }  
                 });
             }
@@ -133,7 +133,7 @@ export default {
         font-weight: 700;
     }
 
-     @media (max-width: 500px) {
+     @media (max-width: 700px) {
         .nav{
             flex-direction: column;
             padding: 30px 20px 20px 20px;

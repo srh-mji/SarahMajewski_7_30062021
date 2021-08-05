@@ -26,6 +26,7 @@
                 <label for="password">Mot de passe </label>
                 <input type="password" class="form-control" v-model="password" id="password" placeholder="Entrez votre mot de passe" minlength="8" maxlength="25" required>
             </div>
+            <div class="errorMessage">{{message}}</div>
             <button type="submit"> Envoyer </button>
          </form>
     </div>
@@ -51,8 +52,8 @@ export default {
         login(){
             axios.post(`http://localhost:3000/api/user/login`,
                 {
-                   'Email' : this.email,
-                    'Password' : this.password
+                   'email' : this.email,
+                    'password' : this.password
                 },
                 {
                     headers: {
@@ -69,7 +70,7 @@ export default {
                     this.message = "Utilisateur inconnu.";
                 }
                 if (error.response.status === 401) {
-                    this.message = "Email ou mot de passe invalide.";
+                    this.message = "E-mail ou mot de passe invalide.";
                 }
                 if (error.response.status === 500) {
                     this.message = "Erreur serveur.";
@@ -134,7 +135,7 @@ export default {
         font-weight: 700;
     }
 
-     @media (max-width: 500px) {
+     @media (max-width: 700px) {
         .nav{
             flex-direction: column;
             padding: 30px 20px 20px 20px;
