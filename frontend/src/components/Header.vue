@@ -8,9 +8,9 @@
 
          <nav>
             <router-link to='/account'>
-                <div>Mon profil</div>
+                <a>Mon profil</a>
             </router-link>
-            <div> Se déconnecter</div>
+            <a type="submit" @click = disconnect()> Se déconnecter </a>
         </nav>
     </header>
     
@@ -19,8 +19,17 @@
 <script>
 
 export default {
-    name: 'Header'
+    name: 'Header',
+
+    methods: {
+        disconnect(){
+            localStorage.removeItem('user');
+            location.href = "/";
+        }
 }
+}
+
+
 
 </script> 
 
@@ -37,8 +46,13 @@ export default {
         height: 100px;
         object-fit: cover;
     }
+     a {
+        padding: 10px;
+        font-weight: 700;
+        cursor: pointer;
+    }
 
-     @media (max-width: 500px) {
+     @media (max-width: 700px) {
         header{
             flex-direction: column;
             padding: 30px 20px 20px 20px;
