@@ -3,6 +3,7 @@
     "username": "root",
     "password": null,
     "database": "projet7",
+    "port": 3308,
     "host": "localhost",
     "dialect": "mysql"
   },
@@ -10,6 +11,7 @@
     "username": "root",
     "password": null,
     "database": "projet7",
+    "port": 3308,
     "host": "localhost",
     "dialect": "mysql"
   },
@@ -17,6 +19,7 @@
     "username": "root",
     "password": null,
     "database": "projet7",
+    "port": 3308,
     "host": "localhost",
     "dialect": "mysql"
   }

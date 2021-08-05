@@ -1,27 +1,53 @@
-const { Model } = require("sequelize")
-
+'use strict';
+const {
+  Model
+} = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-    const User = sequelize.define('User', {
-        // User Model attributes are defined here
-        name: {
-          type: DataTypes.STRING,
-          allowNull: false
-        },
-        email: {
-            type: DataTypes.STRING,
-            unique: true,
-            allowNull: false
-        },
-        password: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-      });
-    // Sequelize association to create a connection between User model & Post model
-      User.associate = function(models) {
-        // associations can be defined here
-        models.User.hasMany(models.Post)
-      };
-
-      return User
-    };
+  class User extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    static associate(models) {
+      // define association here
+      models.User.hasMany(models.Post);
+      models.User.hasMany(models.Comment);
+    }
+  };
+  User.init({
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    image: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    biography: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false
+    }
+  }, {
+    sequelize,
+    modelName: 'User',
+  });
+  return User;
+};
