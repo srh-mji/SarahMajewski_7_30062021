@@ -16,9 +16,9 @@ const multer = require('../middleware/multer-config');
 // Creation of the different routes of the API
 router.post('/signup', userCtrl.signup);
 router.post('/login', userCtrl.login);
-router.get('/profil', auth, userCtrl.getAllUsers);
-router.put('/profil/:id', auth, multer, userCtrl.updateProfil);
-router.get('/profil/.id', auth, userCtrl.getProfil);
-router.delete('/profil/:id', auth, userCtrl.deleteProfil);
+router.get('/account', auth, userCtrl.getAllUsers);
+router.put('/account/:id', auth, multer, userCtrl.updateAccount);
+router.get('/account/:id', auth, userCtrl.getAccount);
+router.delete('/account/:id', auth, userCtrl.deleteAccount);
 
 module.exports = router;
