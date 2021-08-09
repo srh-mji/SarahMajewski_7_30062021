@@ -132,7 +132,7 @@ exports.login = (req, res, next) => {
 };
 
 // Middleware to get user profil 
-exports.getProfil = (req, res, next) => {
+exports.getAccount = (req, res, next) => {
   const user = User.findOne({
       where: {
         id: req.params.id
@@ -158,7 +158,7 @@ exports.getAllUsers = (req, res, next) => {
 };
 
 // Middleware to update user profil
-exports.updateProfil = (req, res, next) => {
+exports.updateAccount = (req, res, next) => {
   User.findOne({
     where: {
       id: id
@@ -174,7 +174,7 @@ exports.updateProfil = (req, res, next) => {
       'error': "Les champs 'nom' et 'biographie' doivent être remplis"
     });
   }
-  // add/change profil image 
+  // add/change profile image 
   const userObject = req.file ? {
     ...req.body.user,
     image: `${req.protocol}://${req.get("host")}/images/${
@@ -200,8 +200,8 @@ exports.updateProfil = (req, res, next) => {
     }));
 };
 
-// Middleware to delete user profil
-exports.deleteProfil = (req, res, next) => {
+// Middleware to delete user account
+exports.deleteAccount = (req, res, next) => {
   try {
     User.findOne({
       where: {
@@ -222,7 +222,6 @@ exports.deleteProfil = (req, res, next) => {
         });
       });
     } else {
-      // delete image
       User.destroy({
         where: {
           id: id
