@@ -48,20 +48,16 @@ exports.getOnePost = (req, res, next) => {
             include: [{
                     model: User,
                     attributes: ["name", "image", "id"],
-                },
-                {
-                    model: Like,
-                    attributes: ["PostId", "UserId"],
-                },
+                }, 
                 {
                     model: Comment,
                     order: [
                         ["createdAt", "DESC"]
                     ],
-                    attributes: ["message", "pseudo", "UserId"],
+                    attributes: ["message", "name", "UserId"],
                     include: [{
                         model: db.User,
-                        attributes: ["photo", "pseudo"],
+                        attributes: ["photo", "name"],
                     }, ],
                 },
             ],
