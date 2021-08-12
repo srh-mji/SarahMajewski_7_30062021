@@ -133,7 +133,7 @@ exports.login = (req, res, next) => {
 
 // Middleware to get user profil 
 exports.getAccount = (req, res, next) => {
-  const user = User.findOne({
+  User.findOne({
       where: {
         id: req.params.id
       }
@@ -161,7 +161,7 @@ exports.getAllUsers = (req, res, next) => {
 exports.updateAccount = (req, res, next) => {
   User.findOne({
     where: {
-      id: id
+      id: req.params.id
     }
   });
   const name = req.body.name;
