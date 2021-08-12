@@ -1,8 +1,5 @@
 // Get models
-const {Post} = require("../models")
-
-// Get comment model
-const Comment = require('../models/comment');
+const {Post , Comment , User } = require("../models")
 
 // Get file system for image downloads and modifications
 const fs = require('fs');
@@ -21,17 +18,17 @@ exports.getAllPosts = (req, res, next) => {
                 },
                 {
                     model: Comment,
-                    attributes: ["message", "UserId", "PostId"],
+                    attributes: ["message", "image","UserId", "PostId"],
                     order: [
                         ["createdAt", "DESC"]
                     ],
                 },
             ],
         })
-        if (!posts) {
-            throw new Error('Erreur');
-        }
-        res.status(200).send(posts);
+        .then( posts =>{
+            res.status(200).send(posts);
+        })
+        
     } catch (error) {
         res.status(400).json({
             error
@@ -54,15 +51,17 @@ exports.getOnePost = (req, res, next) => {
                     order: [
                         ["createdAt", "DESC"]
                     ],
-                    attributes: ["message", "name", "UserId"],
+                    attributes: ["message", "image", "UserId","PostId"],
                     include: [{
-                        model: db.User,
-                        attributes: ["photo", "name"],
+                        model: User,
+                        attributes: ["image", "name"],
                     }, ],
                 },
             ],
-        });
-        res.status(200).json(post);
+        })
+        .then( post =>{
+            res.status(200).send(post);
+        })
     } catch (error) {
         res.status(400).json({
             error
@@ -77,14 +76,14 @@ exports.createOnePost = (req, res, next) => {
     }
     User.findOne({
         attributes: ["name", "image", "id"],
-        where: { id: req.user.id },
+        where: { id: req.params.id },
       });
 
       const post = new Post(
         {
             UserId: req.body.UserId,
             message: req.body.message,
-            image: image
+            image: req.body.image
         }
     )
     post.save()
@@ -119,7 +118,7 @@ exports.modifyOnePost = (req, res, next) => {  try {
       });
       res.status(200).json({ newPost: newPost, messageRetour: "Post modifié" });
     } else {
-      res.status(400).json({ message: "Vous n'avez pas les droits requis" });
+      res.status(400).json({ message: "Erreur" });
     }
   } catch (error) {
     return res.status(500).send({ error: "Erreur serveur" });
@@ -168,6 +167,7 @@ exports.getUserPosts = (req, res, next) => {
 exports.createOneComment = (req, res, next) => {
     const comment = new Comment({
         message: req.body.message,
+        image: req.body.image,
         UserId: req.body.UserId,
         PostId: req.params.PostId,
     });
