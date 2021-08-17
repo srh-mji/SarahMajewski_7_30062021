@@ -8,7 +8,7 @@ const fs = require('fs');
 exports.getAllPosts = (req, res, next) => {
     try {
         Post.findAll({
-            attributes: ["id", "message", "image"],
+            attributes: ["id", "message", "image", "createdAt"],
             order: [
                 ["createdAt", "DESC"]
             ],
@@ -70,60 +70,62 @@ exports.getOnePost = (req, res, next) => {
 };
 
 exports.createOnePost = (req, res, next) => {
-    let image = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
-    if (!image) {
-        throw new Erreur('Erreur')
-    }
-    User.findOne({
+    try {
+    const user = User.findOne({
         attributes: ["name", "image", "id"],
         where: { id: req.params.id },
-      });
-
-      const post = new Post(
-        {
-            UserId: req.body.UserId,
-            message: req.body.message,
-            image: req.body.image
-        }
-    )
-    post.save()
-        .then((retour) => res.status(201).json({ message: "Message créé !" }))
-        .catch(error => res.status(400).json({ error }))
-};
-
-exports.modifyOnePost = (req, res, next) => {  try {
-    let newimage;
-    let post = Post.findOne({ where: { id: req.params.id } });
-    if (userId === post.id) {
-      if (req.file) {
-        newimage = `${req.protocol}://${req.get("host")}/images/${
-          req.file.filename
-        }`;
-        if (post.image) {
-          const filename = post.image.split("/images")[1];
-          fs.unlink(`images/${filename}`, (err) => {
-            if (err) console.log(err);
-            else {
-              console.log(`Deleted file: images/${filename}`);
+      })
+        if (user !== null) {
+            if (req.file) {
+              image = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
+            } else {
+              image = null;
             }
-          });
-        }
-      }
-      if (req.body.message) {
-        post.message = req.body.message;
-      }
-      post.image = newimage;
-      const newPost = post.save({
-        fields: ["message", "image"],
-      });
-      res.status(200).json({ newPost: newPost, messageRetour: "Post modifié" });
-    } else {
-      res.status(400).json({ message: "Erreur" });
-    }
-  } catch (error) {
-    return res.status(500).send({ error: "Erreur serveur" });
-  }
+            
+            Post.create({
+                include: [
+                  {
+                    model: User,
+                    attributes: ["name", "image", "id"],
+                  },
+                ],
+                message: req.body.message,
+                UserId: req.body.UserId,
+                image: req.body.image,
+              })
+             res.status(201).json({ message: "Message créé !" })
+            } else {
+                res.status(400).send({ error: "Erreur " });
+              }
+            }
+                catch (error) {
+                return res.status(500).send({ error: "Erreur serveur" });
+              }
 };
+
+exports.modifyOnePost = (req, res, next) => {  
+    const postObject = req.file ? {
+        ...req.body.post,
+        image: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
+    } : {
+        ...req.body
+    }
+    Post.update({
+            ...postObject,
+            id: req.params.id
+        }, {
+            where: {
+                id: req.params.id
+            }
+        })
+        .then(() => res.status(200).json({
+            message: "Post modifié !"
+        }))
+        .catch(error => res.status(400).json({
+            error
+        }))
+};
+
 
 exports.deleteOnePost = (req, res, next) => {
     Post.destroy({
@@ -139,29 +141,6 @@ exports.deleteOnePost = (req, res, next) => {
         }))
 };
 
-exports.getUserPosts = (req, res, next) => {
-    try {
-        Post.findAll({
-            where: {
-                UserId: req.params.id
-            },
-            include: {
-                model: User,
-                required: true,
-                attributes: ["name", "image", "id"]
-            },
-            order: [
-                ["createdAt", "DESC"]
-            ]
-        })
-        res.status(200).json(post);
-    } catch (error) {
-        res.status(400).json({
-            error
-        });
-    };
-};
-
 // Comment
 
 exports.createOneComment = (req, res, next) => {
@@ -169,7 +148,7 @@ exports.createOneComment = (req, res, next) => {
         message: req.body.message,
         image: req.body.image,
         UserId: req.body.UserId,
-        PostId: req.params.PostId,
+        PostId: req.params.id,
     });
     comment.save()
         .then((retour) => res.status(201).json({
@@ -215,4 +194,4 @@ exports.deleteOneComment = (req, res, next) => {
         .catch(error => res.status(400).json({
             error
         }))
-}
+};
