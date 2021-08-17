@@ -202,38 +202,15 @@ exports.updateAccount = (req, res, next) => {
 
 // Middleware to delete user account
 exports.deleteAccount = (req, res, next) => {
-  try {
-    User.findOne({
-      where: {
+  User.destroy({
+    where: {
         id: req.params.id
-      }
-    });
-    if (user.image !== null) {
-      const filename = user.image.split("/images")[1];
-      fs.unlink(`upload/${filename}`, () => {
-        // delete image and delete user
-        User.destroy({
-          where: {
-            id: id
-          }
-        });
-        res.status(200).json({
-          message: 'Utilisateur supprimé'
-        });
-      });
-    } else {
-      User.destroy({
-        where: {
-          id: id
-        }
-      });
-      res.status(200).json({
-        message: 'Utilisateur supprimé'
-      });
     }
-  } catch (error) {
-    return res.status(400).send({
-      error
-    });
-  }
+})
+.then(() => res.status(200).json({
+    message: "Utilisateur supprimé !"
+}))
+.catch(error => res.status(400).json({
+    error
+}))
 };
