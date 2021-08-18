@@ -111,6 +111,7 @@ export default {
         margin-top: 60px;
     }
      form input{
+        border-style: solid;
         font-size: 14px;
         padding: 10px;
         margin-bottom: 15px;
@@ -124,7 +125,7 @@ export default {
     button {
         background-color: grey;
         opacity: 0.6;
-         font-size: 16px;
+        font-size: 16px;
         padding: 10px;
         margin-bottom: 15px;
         border-radius: 10px;
