@@ -47,9 +47,9 @@ exports.signup = (req, res, next) => {
           User.create(user)
             .then(user => {
               res.status(200).json({
-                userId: user._id,
+                userId: user.id,
                 token: jwt.sign({
-                    userId: user._id
+                    userId: user.id
                   },
                   'RANDOM_TOKEN_SECRET', {
                     expiresIn: '24h'
@@ -101,9 +101,9 @@ exports.login = (req, res, next) => {
                 });
               } else {
                 res.status(200).json({
-                  userId: user._id,
+                  userId: user.id,
                   token: jwt.sign({
-                      userId: user._id
+                      userId: user.id
                     },
                     'RANDOM_TOKEN_SECRET', {
                       expiresIn: '24h'
@@ -202,9 +202,13 @@ exports.updateAccount = (req, res, next) => {
 
 // Middleware to delete user account
 exports.deleteAccount = (req, res, next) => {
+  const token = req.headers.authorization.split(' ')[1];
+    const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+    const userId = decodedToken.userId;
+
   User.destroy({
     where: {
-        id: req.params.id
+        id: userId
     }
 })
 .then(() => res.status(200).json({
