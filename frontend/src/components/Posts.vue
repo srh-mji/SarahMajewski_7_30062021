@@ -25,16 +25,20 @@
     </v-card-title>
     <v-card-text>
             <p>
-              {{post.message}}
+              {{post.message}}  
             </p>
     </v-card-text>
     <v-img
+            v-if="post.image"
+            ref="post.image"
             alt="image postée par l'utilisateur"
             :max-height="600"
             :max-width="400"
             class="mx-auto pb-5"
           >
     </v-img>
+    <button v-if="$user.userId == post.User.id" type="submit" @click = deleteOnePost(post.id)> Supprimer le message </button>
+    <button v-if="$user.userId == post.User.id" type="submit" @click = modifyOnePost()> Modifier le message </button>
   </v-card>
   </v-flex>
   </v-layout>
@@ -69,6 +73,24 @@ export default {
                 this.posts = res.data;
             })
         },
+        deleteOnePost(postId){
+            axios.delete(`http://localhost:3000/api/post/${postId}`,
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${this.$token}`
+                        }
+                    }
+                )
+                .then(location.href = '/')
+
+                .catch((error) => {
+                    error
+                });
+            },
+            modifyOnePost(){
+                location.href = '/post'
+            },
     }
 }
 </script>
