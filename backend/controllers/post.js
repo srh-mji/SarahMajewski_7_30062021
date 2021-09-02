@@ -1,6 +1,7 @@
 // Get models
 const {Post , Comment , User } = require("../models")
 
+const jwt = require('jsonwebtoken');
 // Get file system for image downloads and modifications
 const fs = require('fs');
 
@@ -44,7 +45,7 @@ exports.getOnePost = (req, res, next) => {
             },
             include: [{
                     model: User,
-                    attributes: ["name", "image", "id"],
+                    attributes: ["name", "image", "id" ],
                 }, 
                 {
                     model: Comment,
@@ -70,37 +71,27 @@ exports.getOnePost = (req, res, next) => {
 };
 
 exports.createOnePost = (req, res, next) => {
+    const token = req.headers.authorization.split(' ')[1];
+    const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+    const userId = decodedToken.userId;
+
     try {
-    const user = User.findOne({
-        attributes: ["name", "image", "id"],
-        where: { id: req.params.id },
-      })
-        if (user !== null) {
+        // if (userId !== null) {
             if (req.file) {
               image = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
             } else {
               image = null;
             }
-            
             Post.create({
-                include: [
-                  {
-                    model: User,
-                    attributes: ["name", "image", "id"],
-                  },
-                ],
                 message: req.body.message,
-                UserId: req.body.UserId,
-                image: req.body.image,
+                UserId: userId,
+                image: image,
               })
-             res.status(201).json({ message: "Message créé !" })
-            } else {
-                res.status(400).send({ error: "Erreur " });
-              }
-            }
-                catch (error) {
-                return res.status(500).send({ error: "Erreur serveur" });
-              }
+
+            .then(()=>res.status(201).json({ message: "Message créé !" }))
+            .catch(()=> res.status(400).send({ error: "Erreur " }))
+            // }
+        } catch (error) { return res.status(500).send({ error: "Erreur serveur" })}
 };
 
 exports.modifyOnePost = (req, res, next) => {  
