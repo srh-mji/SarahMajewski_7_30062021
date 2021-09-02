@@ -45,7 +45,7 @@ exports.getOnePost = (req, res, next) => {
             },
             include: [{
                     model: User,
-                    attributes: ["name", "image", "id" ],
+                    attributes: ["name", "image", "id"],
                 }, 
                 {
                     model: Comment,

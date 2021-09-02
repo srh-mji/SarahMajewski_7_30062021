@@ -38,7 +38,7 @@
           >
     </v-img>
     <button v-if="$user.userId == post.User.id" type="submit" @click = deleteOnePost(post.id)> Supprimer le message </button>
-    <button v-if="$user.userId == post.User.id" type="submit" @click = modifyOnePost()> Modifier le message </button>
+    <button v-if="$user.userId == post.User.id" type="submit" @click = modifyOnePost(post.id)> Modifier le message </button>
   </v-card>
   </v-flex>
   </v-layout>
@@ -88,8 +88,9 @@ export default {
                     error
                 });
             },
-            modifyOnePost(){
-                location.href = '/post'
+            modifyOnePost(postId){
+                localStorage.setItem('postId', postId)
+                location.href = '/post';
             },
     }
 }
