@@ -96,7 +96,7 @@ exports.createOnePost = (req, res, next) => {
 
 exports.modifyOnePost = (req, res, next) => {  
     const postObject = req.file ? {
-        ...req.body.post,
+        ...req.body,
         image: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
     } : {
         ...req.body
@@ -119,6 +119,16 @@ exports.modifyOnePost = (req, res, next) => {
 
 
 exports.deleteOnePost = (req, res, next) => {
+    const token = req.headers.authorization.split(' ')[1];
+    const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+    const userId = decodedToken.userId;
+
+    Post.findOne({
+        where: {
+            id: req.params.id,
+        }})
+    
+    if(userId == post.UserId || userId == 1){
     Post.destroy({
             where: {
                 id: req.params.id
@@ -130,6 +140,7 @@ exports.deleteOnePost = (req, res, next) => {
         .catch(error => res.status(400).json({
             error
         }))
+    }
 };
 
 // Comment
@@ -137,12 +148,11 @@ exports.deleteOnePost = (req, res, next) => {
 exports.createOneComment = (req, res, next) => {
     const comment = new Comment({
         message: req.body.message,
-        image: req.body.image,
         UserId: req.body.UserId,
         PostId: req.params.id,
     });
     comment.save()
-        .then((retour) => res.status(201).json({
+        .then((res) => res.status(201).json({
             message: "Commentaire publié !"
         }))
         .catch(error => res.status(400).json({
@@ -150,31 +160,8 @@ exports.createOneComment = (req, res, next) => {
         }))
 };
 
-exports.modifyOneComment = (req, res, next) => {
-    const commentObject = req.file ? {
-        ...req.body.comment,
-        image: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
-    } : {
-        ...req.body
-    }
-    Comment.update({
-            ...commentObject,
-            id: req.params.id
-        }, {
-            where: {
-                id: req.params.id
-            }
-        })
-        .then(() => res.status(200).json({
-            message: "Commentaire modifié !"
-        }))
-        .catch(error => res.status(400).json({
-            error
-        }))
-};
-
 exports.deleteOneComment = (req, res, next) => {
-    Comment.destroy({
+      Comment.destroy({
             where: {
                 id: req.params.id
             }
@@ -185,4 +172,4 @@ exports.deleteOneComment = (req, res, next) => {
         .catch(error => res.status(400).json({
             error
         }))
-};
+    };
