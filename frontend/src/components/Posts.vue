@@ -30,15 +30,26 @@
     </v-card-text>
     <v-img
             v-if="post.image"
-            ref="post.image"
+            src="post.image"
             alt="image postée par l'utilisateur"
             :max-height="600"
             :max-width="400"
             class="mx-auto pb-5"
           >
     </v-img>
-    <button v-if="$user.userId == post.User.id" type="submit" @click = deleteOnePost(post.id)> Supprimer le message </button>
+    <button v-if="$user.userId == post.User.id || $user.userId ==1" type="submit" @click = deleteOnePost(post.id)> Supprimer le message </button>
     <button v-if="$user.userId == post.User.id" type="submit" @click = modifyOnePost(post.id)> Modifier le message </button>
+    <form>
+            <label for="commentContent">Commentaire</label>
+            <textarea name="message" v-model="message" id="message" cols="30" rows="10" placeholder="Quoi de neuf ?"></textarea>
+            <button type="submit" @click = createOneComment(post.id)> Publier</button>
+            <button v-if="$user.userId == post.User.id || $user.userId ==1" type="submit" @click = deleteOneComment(comment.id)> Supprimer le commentaire </button>
+    </form>
+         <v-card-text>
+            <p>
+              {{post.Comments.message}}  
+            </p>
+         </v-card-text>
   </v-card>
   </v-flex>
   </v-layout>
@@ -52,6 +63,8 @@ export default {
     data(){
         return {
             posts: [],
+            message:"",
+            file:""
         }
     },
     mounted() {
@@ -71,6 +84,7 @@ export default {
             )
             .then(res => {
                 this.posts = res.data;
+                console.log(this.posts)
             })
         },
         deleteOnePost(postId){
@@ -88,9 +102,41 @@ export default {
                     error
                 });
             },
-            modifyOnePost(postId){
+        modifyOnePost(postId){
                 localStorage.setItem('postId', postId)
                 location.href = '/post';
+        },
+
+        createOneComment(postId){
+            let DataForm = new FormData();
+            DataForm.append('message' , this.message);
+
+            axios.post(`http://localhost:3000/api/post/${postId}/comments/`, DataForm,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${this.$token}`
+                    }
+                }
+            )
+            
+            .then(this.$root.$emit('Comments'))
+            .then(location.href = '/')
+        },
+        deleteOneComment(commentId){
+            axios.delete(`http://localhost:3000/api/post/comments/${commentId}`,
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${this.$token}`
+                        }
+                    }
+                )
+                .then(location.href = '/')
+
+                .catch((error) => {
+                    error
+                });
             },
     }
 }
