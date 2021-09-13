@@ -21,7 +21,6 @@ router.delete('/:id',auth, multer, postCtrl.deleteOnePost);
 
 // Comments
 router.post('/:id/comments',auth, multer, postCtrl.createOneComment);
-router.put('/comments/:id',auth, multer, postCtrl.modifyOneComment);
 router.delete('/comments/:id',auth, multer, postCtrl.deleteOneComment);
 
 module.exports = router;
