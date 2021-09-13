@@ -1,7 +1,7 @@
 <template>
 <div class="UserAccount">
-    <h1>Modifier votre profil !</h1>
-    <form action="" @submit.prevent="updateAccount">
+    <h1>Modifier votre profil {{user.name}}!</h1>
+    <form>
              <div class="form-group">
                 <label for="nom">Nom </label>
                 <input type="name" class="form-control" v-model="name" id="name" placeholder="Entrez votre nom" maxlength="50" required>
@@ -20,7 +20,7 @@
                 name="Charger une image"
               />
               </div>
-            <button type="submit"> Modifier votre profil </button>
+            <button type="submit" @click = updateAccount($user.userId)> Modifier votre profil </button>
          </form>
     <button type="submit" @click = deleteAccount()> Supprimer le profil </button>
 </div>
@@ -33,6 +33,7 @@ export default {
     name: 'UserAccount',
     data() {
         return {
+            user:[],
             biography: "",
             name:"",
             file: ""
@@ -43,6 +44,20 @@ export default {
         uploadImage() {
             const file = this.$refs.file.files[0];
             this.file = file;
+        },
+        getAccount(){
+            const userId = this.userId;
+            axios.get(`http://localhost:3000/api/user/account/${userId}`,
+            {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${this.$token}`
+                        }
+                    }
+            )
+            .then(res => {
+                this.user = res.data;
+            })
         },
         deleteAccount(){
             const userId = this.userId;
@@ -63,9 +78,8 @@ export default {
                 });
             },
 
-        updateAccount(){
+        updateAccount(userId){
             this.uploadImage();
-            const userId = this.userId;
             let DataForm = new FormData();
             DataForm.append('biography' , this.biography);
             DataForm.append('name' , this.name);
@@ -81,7 +95,7 @@ export default {
             )
             
             .then(this.$root.$emit('Users'))
-            .then(location.href = '/account')
+            .then(location.reload())
         },
     }
 }
