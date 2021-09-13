@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import Signup from '../views/Signup.vue'
 import Account from '../views/Account.vue'
 import Post from '../views/Post.vue'
+import Member from '../views/Member.vue'
 
 Vue.use(VueRouter)
 
@@ -27,6 +28,11 @@ const routes = [
     path: '/post',
     name: 'Post',
     component: Post
+  },
+  {
+    path: '/member',
+    name: 'Member',
+    component: Member
   },
 ]
 
