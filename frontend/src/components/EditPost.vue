@@ -12,7 +12,7 @@
                 >
                   <img v-if="post.User.image"
                     alt="Avatar"
-                    src="post.User.image"
+                    :src="post.User.image"
                   >
                   <v-icon dark v-else>
                      mdi-account-circle
@@ -29,7 +29,7 @@
     </v-card-text>
     <v-img
             v-if="post.image"
-            ref="post.image"
+            :src="post.image"
             alt="image postée par l'utilisateur"
             :max-height="600"
             :max-width="400"

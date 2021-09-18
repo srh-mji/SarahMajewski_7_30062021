@@ -13,7 +13,7 @@
                 >
                   <img v-if="post.User.image"
                     alt="Avatar"
-                    src="post.User.image"
+                    :src="post.User.image"
                   >
                   <v-icon dark v-else>
                      mdi-account-circle
@@ -30,7 +30,7 @@
     </v-card-text>
     <v-img
             v-if="post.image"
-            src="post.image"
+            :src="post.image"
             alt="image postée par l'utilisateur"
             :max-height="600"
             :max-width="400"
@@ -41,14 +41,14 @@
     <button v-if="$user.userId == post.User.id" type="submit" @click = modifyOnePost(post.id)> Modifier le message </button>
     <form>
             <label for="commentContent">Commentaire</label>
-            <textarea name="message" v-model="message" id="message" cols="30" rows="10" placeholder="Quoi de neuf ?"></textarea>
+            <textarea name="message" v-model="message" :id="'message' + post.id" cols="30" rows="10" placeholder="Quoi de neuf ?"></textarea>
             <button type="submit" @click = createOneComment(post.id)> Publier</button>
-            <button v-if="$user.userId == post.User.id || $user.userId ==1" type="submit" @click = deleteOneComment(comment.id)> Supprimer le commentaire </button>
     </form>
-         <v-card-text>
+         <v-card-text  v-for="comment in post.Comments" :key="comment.id">
             <p>
-              {{post.Comments.message}}  
+              {{comment.message}}  
             </p>
+            <button v-if="$user.userId == comment.UserId || $user.userId ==1" type="submit" @click = deleteOneComment(comment.id)> Supprimer le commentaire </button>
          </v-card-text>
   </v-card>
   </v-flex>
@@ -63,6 +63,7 @@ export default {
     data(){
         return {
             posts: [],
+            comments: [],
             message:"",
             file:""
         }
@@ -96,12 +97,13 @@ export default {
                         }
                     }
                 )
-                .then(location.href = '/')
 
+                // .then(location.href = '/')
                 .catch((error) => {
                     error
                 });
             },
+
         modifyOnePost(postId){
                 localStorage.setItem('postId', postId)
                 location.href = '/post';
