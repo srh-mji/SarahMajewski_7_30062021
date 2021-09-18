@@ -136,10 +136,11 @@ exports.getAccount = (req, res, next) => {
   User.findOne({
       where: {
         id: req.params.id
-      }
+      },
     })
+    .then(console.log(req.params.id))
     .then(user => {
-      res.status(200).json(user)
+      res.status(200).send(user)
     })
     .catch(error => res.status(404).json({
       error: 'Utilisateur non trouvé'
@@ -163,52 +164,64 @@ exports.updateAccount = (req, res, next) => {
     where: {
       id: req.params.id
     }
-  });
-  const name = req.body.name;
-  const biography = req.body.biography;
+  })
+  .then((user) => {
+
+    if(!user){
+      return res.status(400).json({
+        'error': "user"
+      });
+    }
+
+    const name = req.body.name;
+    const biography = req.body.biography;
+
+    // checking fields
+    if (name === null || name === '' || biography === null || biography === '') {
+      return res.status(400).json({
+        'error': "Les champs 'nom' et 'biographie' doivent être remplis"
+      });
+    }
+
+    // add/change profile image 
+    const userObject = req.file ? {
+      ...req.body,
+      image: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
+    } : {
+        ...req.body,
+        image: null
+    }
+
+    User.update({
+          ...userObject,
+          id: req.params.id
+      }, {
+          where: {
+              id: req.params.id
+          }
+      })
+      .then(() => res.status(200).json({
+          message: "User modifié !"
+      }))
+      .catch(error => res.status(400).json({
+          error
+      }))
 
 
-  // checking fields
-  if (name === null || name === '' || biography === null || biography === '') {
-    return res.status(400).json({
-      'error': "Les champs 'nom' et 'biographie' doivent être remplis"
-    });
-  }
-  // add/change profile image 
-  const userObject = req.file ? {
-    ...req.body.user,
-    image: `${req.protocol}://${req.get("host")}/images/${
-      req.file.filename
-    }`
-  } : {
-    ...req.body
-  };
-
-  User.update({
-      ...userObject,
-      id: req.params.id
-    }, {
-      where: {
-        id: req.params.id
-      }
-    })
-    .then(() => res.status(200).json({
-      message: 'Utilisateur modifié !'
-    }))
-    .catch(error => res.status(400).json({
+  })
+  .catch(error => res.status(400).json({
       error
-    }));
+  }));
+
+
+
 };
 
 // Middleware to delete user account
 exports.deleteAccount = (req, res, next) => {
-  const token = req.headers.authorization.split(' ')[1];
-    const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
-    const userId = decodedToken.userId;
-
   User.destroy({
     where: {
-        id: userId
+        id: req.params.id
     }
 })
 .then(() => res.status(200).json({
