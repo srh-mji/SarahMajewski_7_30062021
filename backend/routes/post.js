@@ -18,11 +18,9 @@ router.get('/:id',auth, postCtrl.getOnePost);
 router.post('/',auth, multer, postCtrl.createOnePost);
 router.put('/:id',auth, multer, postCtrl.modifyOnePost);
 router.delete('/:id',auth, multer, postCtrl.deleteOnePost);
-router.get('/users/:id',auth, postCtrl.getUserPosts);
 
 // Comments
-router.post('/:id/comments',auth, postCtrl.createOneComment);
-router.put('/comments/:id',auth, postCtrl.modifyOneComment);
-router.delete('/comments/:id',auth, postCtrl.deleteOneComment);
+router.post('/:id/comments',auth, multer, postCtrl.createOneComment);
+router.delete('/comments/:id',auth, multer, postCtrl.deleteOneComment);
 
 module.exports = router;

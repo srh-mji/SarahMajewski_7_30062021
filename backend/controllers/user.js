@@ -47,9 +47,9 @@ exports.signup = (req, res, next) => {
           User.create(user)
             .then(user => {
               res.status(200).json({
-                userId: user._id,
+                userId: user.id,
                 token: jwt.sign({
-                    userId: user._id
+                    userId: user.id
                   },
                   'RANDOM_TOKEN_SECRET', {
                     expiresIn: '24h'
@@ -95,18 +95,15 @@ exports.login = (req, res, next) => {
         if (user) {
           bcrypt.compare(req.body.password, user.password)
             .then(valid => {
-              console.log(valid)
-              console.log(user.password)
-              console.log(req.body.password)
               if (!valid) {
                 res.status(401).json({
                   error: "Mot de passe incorrect !"
                 });
               } else {
                 res.status(200).json({
-                  userId: user._id,
+                  userId: user.id,
                   token: jwt.sign({
-                      userId: user._id
+                      userId: user.id
                     },
                     'RANDOM_TOKEN_SECRET', {
                       expiresIn: '24h'
@@ -135,14 +132,15 @@ exports.login = (req, res, next) => {
 };
 
 // Middleware to get user profil 
-exports.getProfil = (req, res, next) => {
-  const user = User.findOne({
+exports.getAccount = (req, res, next) => {
+  User.findOne({
       where: {
         id: req.params.id
-      }
+      },
     })
+    .then(console.log(req.params.id))
     .then(user => {
-      res.status(200).json(user)
+      res.status(200).send(user)
     })
     .catch(error => res.status(404).json({
       error: 'Utilisateur non trouvé'
@@ -161,83 +159,75 @@ exports.getAllUsers = (req, res, next) => {
 };
 
 // Middleware to update user profil
-exports.updateProfil = (req, res, next) => {
+exports.updateAccount = (req, res, next) => {
   User.findOne({
     where: {
-      id: id
-    }
-  });
-  const name = req.body.name;
-  const biography = req.body.biography;
-
-
-  // checking fields
-  if (name === null || name === '' || biography === null || biography === '') {
-    return res.status(400).json({
-      'error': "Les champs 'nom' et 'biographie' doivent être remplis"
-    });
-  }
-  // add/change profil image 
-  const userObject = req.file ? {
-    ...req.body.user,
-    image: `${req.protocol}://${req.get("host")}/images/${
-      req.file.filename
-    }`
-  } : {
-    ...req.body
-  };
-
-  User.update({
-      ...userObject,
       id: req.params.id
-    }, {
-      where: {
-        id: req.params.id
-      }
-    })
-    .then(() => res.status(200).json({
-      message: 'Utilisateur modifié !'
-    }))
-    .catch(error => res.status(400).json({
+    }
+  })
+  .then((user) => {
+
+    if(!user){
+      return res.status(400).json({
+        'error': "user"
+      });
+    }
+
+    const name = req.body.name;
+    const biography = req.body.biography;
+
+    // checking fields
+    if (name === null || name === '' || biography === null || biography === '') {
+      return res.status(400).json({
+        'error': "Les champs 'nom' et 'biographie' doivent être remplis"
+      });
+    }
+
+    // add/change profile image 
+    const userObject = req.file ? {
+      ...req.body,
+      image: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
+    } : {
+        ...req.body,
+        image: null
+    }
+
+    User.update({
+          ...userObject,
+          id: req.params.id
+      }, {
+          where: {
+              id: req.params.id
+          }
+      })
+      .then(() => res.status(200).json({
+          message: "User modifié !"
+      }))
+      .catch(error => res.status(400).json({
+          error
+      }))
+
+
+  })
+  .catch(error => res.status(400).json({
       error
-    }));
+  }));
+
+
+
 };
 
-// Middleware to delete user profil
-exports.deleteProfil = (req, res, next) => {
-  try {
-    User.findOne({
-      where: {
+// Middleware to delete user account
+exports.deleteAccount = (req, res, next) => {
+  User.destroy({
+    where: {
         id: req.params.id
-      }
-    });
-    if (user.image !== null) {
-      const filename = user.image.split("/images")[1];
-      fs.unlink(`upload/${filename}`, () => {
-        // delete image and delete user
-        User.destroy({
-          where: {
-            id: id
-          }
-        });
-        res.status(200).json({
-          message: 'Utilisateur supprimé'
-        });
-      });
-    } else {
-      // delete image
-      User.destroy({
-        where: {
-          id: id
-        }
-      });
-      res.status(200).json({
-        message: 'Utilisateur supprimé'
-      });
     }
-  } catch (error) {
-    return res.status(400).send({
-      error
-    });
-  }
+})
+.then(() => res.status(200).json({
+    message: "Utilisateur supprimé !"
+}))
+.catch(error => res.status(400).json({
+    error
+}))
 };

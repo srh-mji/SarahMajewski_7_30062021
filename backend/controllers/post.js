@@ -1,9 +1,7 @@
 // Get models
-const {Post} = require("../models")
+const {Post , Comment , User } = require("../models")
 
-// Get comment model
-const Comment = require('../models/comment');
-
+const jwt = require('jsonwebtoken');
 // Get file system for image downloads and modifications
 const fs = require('fs');
 
@@ -11,7 +9,7 @@ const fs = require('fs');
 exports.getAllPosts = (req, res, next) => {
     try {
         Post.findAll({
-            attributes: ["id", "message", "image"],
+            attributes: ["id", "message", "image", "createdAt"],
             order: [
                 ["createdAt", "DESC"]
             ],
@@ -21,17 +19,17 @@ exports.getAllPosts = (req, res, next) => {
                 },
                 {
                     model: Comment,
-                    attributes: ["message", "UserId", "PostId"],
+                    attributes: ["message", "image","UserId", "PostId","id"],
                     order: [
                         ["createdAt", "DESC"]
                     ],
                 },
             ],
         })
-        if (!posts) {
-            throw new Error('Erreur');
-        }
-        res.status(200).send(posts);
+        .then( posts =>{
+            res.status(200).send(posts);
+        })
+        
     } catch (error) {
         res.status(400).json({
             error
@@ -48,25 +46,23 @@ exports.getOnePost = (req, res, next) => {
             include: [{
                     model: User,
                     attributes: ["name", "image", "id"],
-                },
-                {
-                    model: Like,
-                    attributes: ["PostId", "UserId"],
-                },
+                }, 
                 {
                     model: Comment,
                     order: [
                         ["createdAt", "DESC"]
                     ],
-                    attributes: ["message", "pseudo", "UserId"],
+                    attributes: ["message", "image", "UserId","PostId","id"],
                     include: [{
-                        model: db.User,
-                        attributes: ["photo", "pseudo"],
+                        model: User,
+                        attributes: ["image", "name"],
                     }, ],
                 },
             ],
-        });
-        res.status(200).json(post);
+        })
+        .then( post =>{
+            res.status(200).send(post);
+        })
     } catch (error) {
         res.status(400).json({
             error
@@ -75,124 +71,38 @@ exports.getOnePost = (req, res, next) => {
 };
 
 exports.createOnePost = (req, res, next) => {
-    let image = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
-    if (!image) {
-        throw new Erreur('Erreur')
-    }
-    User.findOne({
-        attributes: ["name", "image", "id"],
-        where: { id: req.user.id },
-      });
+    const token = req.headers.authorization.split(' ')[1];
+    const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+    const userId = decodedToken.userId;
 
-      const post = new Post(
-        {
-            UserId: req.body.UserId,
-            message: req.body.message,
-            image: image
-        }
-    )
-    post.save()
-        .then((retour) => res.status(201).json({ message: "Message créé !" }))
-        .catch(error => res.status(400).json({ error }))
-};
-
-exports.modifyOnePost = (req, res, next) => {  try {
-    let newimage;
-    let post = Post.findOne({ where: { id: req.params.id } });
-    if (userId === post.id) {
-      if (req.file) {
-        newimage = `${req.protocol}://${req.get("host")}/images/${
-          req.file.filename
-        }`;
-        if (post.image) {
-          const filename = post.image.split("/images")[1];
-          fs.unlink(`images/${filename}`, (err) => {
-            if (err) console.log(err);
-            else {
-              console.log(`Deleted file: images/${filename}`);
-            }
-          });
-        }
-      }
-      if (req.body.message) {
-        post.message = req.body.message;
-      }
-      post.image = newimage;
-      const newPost = post.save({
-        fields: ["message", "image"],
-      });
-      res.status(200).json({ newPost: newPost, messageRetour: "Post modifié" });
-    } else {
-      res.status(400).json({ message: "Vous n'avez pas les droits requis" });
-    }
-  } catch (error) {
-    return res.status(500).send({ error: "Erreur serveur" });
-  }
-};
-
-exports.deleteOnePost = (req, res, next) => {
-    Post.destroy({
-            where: {
-                id: req.params.id
-            }
-        })
-        .then(() => res.status(200).json({
-            message: "Post supprimé !"
-        }))
-        .catch(error => res.status(400).json({
-            error
-        }))
-};
-
-exports.getUserPosts = (req, res, next) => {
     try {
-        Post.findAll({
-            where: {
-                UserId: req.params.id
-            },
-            include: {
-                model: User,
-                required: true,
-                attributes: ["name", "image", "id"]
-            },
-            order: [
-                ["createdAt", "DESC"]
-            ]
-        })
-        res.status(200).json(post);
-    } catch (error) {
-        res.status(400).json({
-            error
-        });
-    };
+        // if (userId !== null) {
+            if (req.file) {
+              image = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
+            } else {
+              image = null;
+            }
+            Post.create({
+                message: req.body.message,
+                UserId: userId,
+                image: image,
+              })
+
+            .then(()=>res.status(201).json({ message: "Message créé !" }))
+            .catch(()=> res.status(400).send({ error: "Erreur " }))
+            // }
+        } catch (error) { return res.status(500).send({ error: "Erreur serveur" })}
 };
 
-// Comment
-
-exports.createOneComment = (req, res, next) => {
-    const comment = new Comment({
-        message: req.body.message,
-        UserId: req.body.UserId,
-        PostId: req.params.PostId,
-    });
-    comment.save()
-        .then((retour) => res.status(201).json({
-            message: "Commentaire publié !"
-        }))
-        .catch(error => res.status(400).json({
-            error
-        }))
-};
-
-exports.modifyOneComment = (req, res, next) => {
-    const commentObject = req.file ? {
-        ...req.body.comment,
+exports.modifyOnePost = (req, res, next) => {  
+    const postObject = req.file ? {
+        ...req.body,
         image: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
     } : {
         ...req.body
     }
-    Comment.update({
-            ...commentObject,
+    Post.update({
+            ...postObject,
             id: req.params.id
         }, {
             where: {
@@ -200,7 +110,62 @@ exports.modifyOneComment = (req, res, next) => {
             }
         })
         .then(() => res.status(200).json({
-            message: "Commentaire modifié !"
+            message: "Post modifié !"
+        }))
+        .catch(error => res.status(400).json({
+            error
+        }))
+};
+
+
+exports.deleteOnePost = (req, res, next) => {
+    const token = req.headers.authorization.split(' ')[1];
+    const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+    const userId = decodedToken.userId;
+
+    // console.log(userId , req.params.id)
+
+    Post.findOne({
+        where: {
+            id: req.params.id,
+        }
+    })
+    .then((Post) => {
+        // console.log(Post)
+        if(userId == Post.UserId || userId == 1){
+        Post.destroy({
+                where: {
+                    id: req.params.id
+                }
+            })
+            .then(() => res.status(200).json({
+                message: "Post supprimé !"
+            }))
+            .catch(error => res.status(400).json({
+                error
+            }))
+        }
+    })
+    .catch(error => res.status(400).json({
+        error
+    }))
+};
+
+// Comment
+
+exports.createOneComment = (req, res, next) => {
+    const token = req.headers.authorization.split(' ')[1];
+    const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+    const userId = decodedToken.userId;
+
+    const comment = new Comment({
+        message: req.body.message,
+        UserId: userId,
+        PostId: req.params.id,
+    });
+    comment.save()
+        .then((res) => res.status(201).json({
+            message: "Commentaire publié !"
         }))
         .catch(error => res.status(400).json({
             error
@@ -208,7 +173,7 @@ exports.modifyOneComment = (req, res, next) => {
 };
 
 exports.deleteOneComment = (req, res, next) => {
-    Comment.destroy({
+      Comment.destroy({
             where: {
                 id: req.params.id
             }
@@ -219,4 +184,4 @@ exports.deleteOneComment = (req, res, next) => {
         .catch(error => res.status(400).json({
             error
         }))
-}
+    };

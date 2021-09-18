@@ -1,0 +1,149 @@
+<template> 
+ <v-layout wrap>
+ <v-flex md4 v-for="post in posts" :key="post.id">
+  <v-card  
+    class="mx-auto"
+    color="#E4E4E4"
+    dark
+    max-width="400"
+  >
+    <v-card-title>
+      <v-avatar
+                  size="36px"
+                >
+                  <img v-if="post.User.image"
+                    alt="Avatar"
+                    :src="post.User.image"
+                  >
+                  <v-icon dark v-else>
+                     mdi-account-circle
+                  </v-icon>
+                </v-avatar>
+
+         <span class="post-userName">Par {{post.User.name}}</span>
+         <span class="post-info"> Posté le {{post.createdAt}}</span>
+    </v-card-title>
+    <v-card-text>
+            <p>
+              {{post.message}}  
+            </p>
+    </v-card-text>
+    <v-img
+            v-if="post.image"
+            :src="post.image"
+            alt="image postée par l'utilisateur"
+            :max-height="600"
+            :max-width="400"
+            class="mx-auto pb-5"
+          >
+    </v-img>
+    <button v-if="$user.userId == post.User.id || $user.userId ==1" type="submit" @click = deleteOnePost(post.id)> Supprimer le message </button>
+    <button v-if="$user.userId == post.User.id" type="submit" @click = modifyOnePost(post.id)> Modifier le message </button>
+    <form>
+            <label for="commentContent">Commentaire</label>
+            <textarea name="message" v-model="message" :id="'message' + post.id" cols="30" rows="10" placeholder="Quoi de neuf ?"></textarea>
+            <button type="submit" @click = createOneComment(post.id)> Publier</button>
+    </form>
+         <v-card-text  v-for="comment in post.Comments" :key="comment.id">
+            <p>
+              {{comment.message}}  
+            </p>
+            <button v-if="$user.userId == comment.UserId || $user.userId ==1" type="submit" @click = deleteOneComment(comment.id)> Supprimer le commentaire </button>
+         </v-card-text>
+  </v-card>
+  </v-flex>
+  </v-layout>
+</template>
+
+<script>
+import axios from 'axios';
+
+export default {
+    name: 'Posts',
+    data(){
+        return {
+            posts: [],
+            comments: [],
+            message:"",
+            file:""
+        }
+    },
+    mounted() {
+        if(localStorage.user != undefined){
+            this.getAllPosts();
+        }
+    },
+    methods: {
+        getAllPosts(){
+            axios.get(`http://localhost:3000/api/post/`,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${this.$token}`
+                    }
+                }
+            )
+            .then(res => {
+                this.posts = res.data;
+                console.log(this.posts)
+            })
+        },
+        deleteOnePost(postId){
+            axios.delete(`http://localhost:3000/api/post/${postId}`,
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${this.$token}`
+                        }
+                    }
+                )
+
+                // .then(location.href = '/')
+                .catch((error) => {
+                    error
+                });
+            },
+
+        modifyOnePost(postId){
+                localStorage.setItem('postId', postId)
+                location.href = '/post';
+        },
+
+        createOneComment(postId){
+            let DataForm = new FormData();
+            DataForm.append('message' , this.message);
+
+            axios.post(`http://localhost:3000/api/post/${postId}/comments/`, DataForm,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${this.$token}`
+                    }
+                }
+            )
+            
+            .then(this.$root.$emit('Comments'))
+            .then(location.href = '/')
+        },
+        deleteOneComment(commentId){
+            axios.delete(`http://localhost:3000/api/post/comments/${commentId}`,
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${this.$token}`
+                        }
+                    }
+                )
+                .then(location.href = '/')
+
+                .catch((error) => {
+                    error
+                });
+            },
+    }
+}
+</script>
+
+<style scoped>
+
+</style>

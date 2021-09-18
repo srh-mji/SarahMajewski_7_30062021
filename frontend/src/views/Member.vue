@@ -1,34 +1,34 @@
 <template>
-  <div id="post">
+    <div id="account">
     <Login v-if="!connected" />
+
     <Header v-if="connected"/>
-    <EditPost v-if="connected"/>
+    <AllMember v-if="connected"/>
   </div>
 </template>
 
 <script>
-import EditPost from '@/components/EditPost.vue';
 import Login from '@/components/Login.vue';
 import Header from '@/components/Header.vue';
+import AllMember from '@/components/AllMember.vue';
 
 export default({
-    name : 'Post',
+    name : 'Account',
     components : {
         Login,
         Header,
-        EditPost
+        AllMember,
     },
-    
-    data() {
+     data() {
     return{
       connected: true
     };
   },
 
-   created(){
+  created(){
     this.checkConnected()
-    },
-    
+  },
+
    methods: {
     checkConnected(){
       if(localStorage.user !== undefined){
@@ -41,5 +41,4 @@ export default({
       }
     }},
 })
-
 </script>

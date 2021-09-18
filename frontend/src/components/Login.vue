@@ -113,6 +113,7 @@ export default {
         margin-top: 60px;
     }
      form input{
+        border-style: solid;
         font-size: 14px;
         padding: 10px;
         margin-bottom: 15px;
