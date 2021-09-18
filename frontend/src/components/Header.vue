@@ -10,6 +10,9 @@
             <router-link to='/account'>
                 <a>Mon profil</a>
             </router-link>
+            <router-link to='/member'>
+                <a>Membres</a>
+            </router-link>
             <a type="submit" @click = disconnect()> Se déconnecter </a>
         </nav>
     </header>
