@@ -19,7 +19,7 @@ exports.getAllPosts = (req, res, next) => {
                 },
                 {
                     model: Comment,
-                    attributes: ["message", "image","UserId", "PostId"],
+                    attributes: ["message", "image","UserId", "PostId","id"],
                     order: [
                         ["createdAt", "DESC"]
                     ],
@@ -52,7 +52,7 @@ exports.getOnePost = (req, res, next) => {
                     order: [
                         ["createdAt", "DESC"]
                     ],
-                    attributes: ["message", "image", "UserId","PostId"],
+                    attributes: ["message", "image", "UserId","PostId","id"],
                     include: [{
                         model: User,
                         attributes: ["image", "name"],
@@ -123,32 +123,44 @@ exports.deleteOnePost = (req, res, next) => {
     const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
     const userId = decodedToken.userId;
 
+    // console.log(userId , req.params.id)
+
     Post.findOne({
         where: {
             id: req.params.id,
-        }})
-    
-    if(userId == post.UserId || userId == 1){
-    Post.destroy({
-            where: {
-                id: req.params.id
-            }
-        })
-        .then(() => res.status(200).json({
-            message: "Post supprimé !"
-        }))
-        .catch(error => res.status(400).json({
-            error
-        }))
-    }
+        }
+    })
+    .then((Post) => {
+        // console.log(Post)
+        if(userId == Post.UserId || userId == 1){
+        Post.destroy({
+                where: {
+                    id: req.params.id
+                }
+            })
+            .then(() => res.status(200).json({
+                message: "Post supprimé !"
+            }))
+            .catch(error => res.status(400).json({
+                error
+            }))
+        }
+    })
+    .catch(error => res.status(400).json({
+        error
+    }))
 };
 
 // Comment
 
 exports.createOneComment = (req, res, next) => {
+    const token = req.headers.authorization.split(' ')[1];
+    const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+    const userId = decodedToken.userId;
+
     const comment = new Comment({
         message: req.body.message,
-        UserId: req.body.UserId,
+        UserId: userId,
         PostId: req.params.id,
     });
     comment.save()
