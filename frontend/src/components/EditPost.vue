@@ -1,58 +1,67 @@
 <template>
     <div class="editPost">
-        <v-card  
-    class="mx-auto"
-    color="#E4E4E4"
-    dark
-    max-width="400"
-  >
-    <v-card-title>
-      <v-avatar
-                  size="36px"
+        <h2>Modifier votre message</h2>
+        <v-layout>
+            <v-flex>
+                <v-card class="mx-auto" max-width="500">
+                    <v-card-title>
+                    <v-avatar size="36px">
+                        <v-img v-if="post.User.image" alt="Avatar" :src="post.User.image">
+                        </v-img>
+                        <v-icon dark v-else color="grey lighten-1">
+                        mdi-account-circle
+                        </v-icon>
+                    </v-avatar>
+                    <span class="post-userName">Publié par {{post.User.name}}</span>
+                    </v-card-title>
+
+                    <v-card-text>
+                    <p>
+                        le {{post.createdAt | moment("calendar")}}
+                    </p>
+                    <p>
+                        {{post.message}}
+                    </p>
+                    </v-card-text>
+
+                    <v-img v-if="post.image" :src="post.image" alt="image postée par l'utilisateur" :max-height="600"
+                    :max-width="400" class="mx-auto pb-5">
+                    </v-img>
+                </v-card>
+                <v-form @submit.prevent="modifyOnePost(post.id)"
                 >
-                  <img v-if="post.User.image"
-                    alt="Avatar"
-                    :src="post.User.image"
-                  >
-                  <v-icon dark v-else>
-                     mdi-account-circle
-                  </v-icon>
-                </v-avatar>
+                        <v-textarea
+                            filled
+                            name="message"
+                            v-model="message"
+                            label="Message"
+                            :id="message" 
+                            placeholder="Quoi de neuf ?"
+                            color="orange orange-darken-4"
+                            auto-grow
+                        ></v-textarea>
 
-         <span class="post-userName">Par {{post.User.name}}</span>
-         <span class="post-info"> Posté le {{post.createdAt}}</span>
-    </v-card-title>
-    <v-card-text>
-            <p>
-              {{post.message}}  
-            </p>
-    </v-card-text>
-    <v-img
-            v-if="post.image"
-            :src="post.image"
-            alt="image postée par l'utilisateur"
-            :max-height="600"
-            :max-width="400"
-            class="mx-auto pb-5"
-          >
-    </v-img>
-  </v-card>
+                        <input
+                        type="file"
+                        accept="image/png, image/jpeg,
+                        image/bmp, image/gif"
+                        ref="file"
+                        name="Charger une image"
+                        />
 
-        <form @submit.prevent="modifyOnePost(post.id)" >
-            <label for="postContent">Contenu</label>
-            <textarea name="message" v-model="message" id="message" cols="30" rows="10" placeholder="Quoi de neuf ?"></textarea>
-            <div>
-               <label for="image" class="pr-2">Image</label>
-               <input
-                type="file"
-                accept="image/png, image/jpeg,
-                image/bmp, image/gif"
-                ref="file"
-                name="Charger une image"
-              />
-              </div>
-            <button type="submit"> Modifier le post</button>
-        </form>
+
+                        <v-card-actions>
+                            <v-btn
+                                type="submit" 
+                                color="orange lighten-1"
+                                text
+                            >
+                            Modifier le post
+                            </v-btn>
+                        </v-card-actions>
+                </v-form>
+            </v-flex>
+        </v-layout>
     </div>
 </template>
 <script>
@@ -116,3 +125,14 @@ export default {
     }
 }
 </script>
+<style scoped>
+    h2 {
+        text-align: center;
+        margin-top: 60px;
+        background-color: #E4E5E7;
+        padding:10px;
+        margin-bottom: 30px;
+        margin-top: 30px;
+        font-size: 25px;
+    }
+</style>

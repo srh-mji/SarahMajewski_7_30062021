@@ -1,21 +1,38 @@
 <template>
     <div class="newPost">
-        <form @submit.prevent="createOnePost()" >
-            <label for="postContent">Contenu</label>
-            <textarea name="message" v-model="message" id="message" cols="30" rows="10" placeholder="Quoi de neuf ?"></textarea>
-            <div>
-               <label for="image" class="pr-2">Image</label>
-               <input
-                type="file"
-                accept="image/png, image/jpeg,
-                image/bmp, image/gif"
-                ref="file"
-                name="Charger une image"
-              />
-              </div>
-            <!-- <button @click="uploadImage" type="submit"> Publier</button> -->
-            <button type="submit"> Publier</button>
-        </form>
+        <h2>Publier un message</h2>
+        <v-form @submit.prevent="createOnePost()"
+        >
+            <v-textarea
+                filled
+                name="message"
+                v-model="message"
+                label="Message"
+                :id="message" 
+                placeholder="Quoi de neuf ?"
+                color="orange orange-darken-4"
+                auto-grow
+            ></v-textarea>
+
+            <input
+            type="file"
+            accept="image/png, image/jpeg,
+            image/bmp, image/gif"
+            ref="file"
+            name="Charger une image"
+            />
+
+
+            <v-card-actions>
+                <v-btn
+                    type="submit" 
+                    color="orange lighten-1"
+                    text
+                >
+                 Publier un message
+                </v-btn>
+            </v-card-actions>
+        </v-form>
     </div>
 </template>
 
@@ -58,3 +75,14 @@ export default {
     }
 }
 </script>
+<style scoped>
+    h2 {
+        text-align: center;
+        margin-top: 60px;
+        background-color: #E4E5E7;
+        padding:10px;
+        margin-bottom: 30px;
+        margin-top: 30px;
+        font-size: 25px;
+    }
+</style>

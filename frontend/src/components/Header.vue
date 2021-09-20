@@ -1,12 +1,18 @@
 <template>
     <header>
-         <router-link to="/">
-              <img
+        <router-link to="/">
+              <img id="groupomaniaLogo"
               src="../assets/groupomania-logo.png" 
               alt="Groupomania logo">
-         </router-link>
+        </router-link>
 
-         <nav>
+        <router-link to="/">
+              <img id="iconGroupomania"
+              src="../assets/icon-groupomania.png" 
+              alt="Groupomania logo">
+        </router-link>
+
+        <nav>
             <router-link to='/account'>
                 <a>Mon profil</a>
             </router-link>
@@ -41,24 +47,39 @@ export default {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 30px 70px 20px 70px;
+        padding: 0px 70px 0px 70px;
         background-color: #F7D0D0;
+        box-shadow: 5px 5px 10px #E4E4E4;
     }
     header img {
         width: 250px;
-        height: 100px;
+        height: 60px;
         object-fit: cover;
     }
+
+    #iconGroupomania {
+        display:none;
+    }
      a {
-        padding: 10px;
+        padding: 5px;
         font-weight: 700;
-        cursor: pointer;
+        color: black!important;
     }
 
-     @media (max-width: 700px) {
+ @media (max-width: 800px) {
         header{
             flex-direction: column;
-            padding: 30px 20px 20px 20px;
+            padding: 20px 0px 20px 0px;;
+            
         }
+        #groupomaniaLogo {
+            display: none;
+        }
+
+        #iconGroupomania {
+        display:block;
+        width:40px;
+        height: 40px;
+    }
     }
 </style>
