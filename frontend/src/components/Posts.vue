@@ -2,8 +2,8 @@
   <div>
     <h2>Messages publiés</h2>
     <v-layout wrap>
-      <v-flex md4 v-for="post in posts" :key="post.id">
-        <v-card class="mx-auto" max-width="500">
+      <v-flex v-for="post in posts" :key="post.id">
+        <v-card class="pa-4 ma-4" max-width="500">
 
           <v-card-title>
             <v-avatar size="36px">
@@ -29,9 +29,9 @@
             :max-width="400" class="mx-auto pb-5">
           </v-img>
 
-          <v-card-actions>
+          <v-card-actions class="d-block">
             <v-btn v-if="$user.userId == post.User.id || $user.userId ==1" type="submit" @click= deleteOnePost(post.id)
-              color="red lighten-2" text>
+              color="red darken-1" text>
               Supprimer le message
             </v-btn>
 
@@ -59,7 +59,7 @@
               <v-divider></v-divider>
               <v-form>
                 <v-textarea filled name="message" v-model="message" label="Commentaire" :id="message + post.id"
-                  placeholder="Ajouter un commentaire" color="orange orange-darken-4" auto-grow></v-textarea>
+                  placeholder="Ajouter un commentaire" color="orange orange-darken-4" auto-grow required></v-textarea>
                 <v-card-actions>
                   <v-btn @click= createOneComment(post.id) type="submit" color="orange lighten-1" text>
                     Publier un commentaire
@@ -68,7 +68,7 @@
               </v-form>
             </div>
           </v-expand-transition>
-          <v-card-text v-for="comment in post.Comments" :key="comment.id" 
+          <v-card-text class="commentMessage my-2" v-for="comment in post.Comments" :key="comment.id" 
           >
                 <p>
                   {{comment.message}}
@@ -76,7 +76,7 @@
                 <v-card-action>
                 <v-btn v-if="$user.userId == comment.UserId || $user.userId ==1" type="submit"
                 @click= deleteOneComment(comment.id)
-                  color="red lighten-2" text>
+                  color="red darken-1" text>
                   Supprimer le commentaire
                 </v-btn>
               </v-card-action>
@@ -183,4 +183,10 @@
         margin-top: 30px;
         font-size: 25px;
     }
+    .commentMessage {
+      border: 2px double orange;
+      border-radius: 20px!important;
+      background-color: lightyellow;
+    }
+
 </style>
