@@ -1,7 +1,7 @@
 <template>
     <div class="newPost">
         <h2>Publier un message</h2>
-        <v-form @submit.prevent="createOnePost()"
+        <v-form class="pa-2 formNewPost" @submit.prevent="createOnePost()"
         >
             <v-textarea
                 filled
@@ -10,8 +10,9 @@
                 label="Message"
                 :id="message" 
                 placeholder="Quoi de neuf ?"
-                color="orange orange-darken-4"
+                color="red lighten-3"
                 auto-grow
+                required
             ></v-textarea>
 
             <input
@@ -26,8 +27,7 @@
             <v-card-actions>
                 <v-btn
                     type="submit" 
-                    color="orange lighten-1"
-                    text
+                    color="red lighten-4"
                 >
                  Publier un message
                 </v-btn>
@@ -84,5 +84,11 @@ export default {
         margin-bottom: 30px;
         margin-top: 30px;
         font-size: 25px;
+    }
+    .formNewPost {
+        border: 5px double #F7D0D0;
+        border-radius: 20px;
+        width:95%;
+        margin:auto;
     }
 </style>
