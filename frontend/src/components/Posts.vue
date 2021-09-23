@@ -2,7 +2,7 @@
   <div>
     <h2>Messages publiés</h2>
     <v-layout wrap>
-      <v-flex v-for="post in posts" :key="post.id">
+      <v-flex v-for="post in posts" :key="post.id" :id="'postId-'+post.id">
         <v-card class="pa-4 ma-4" max-width="500">
 
           <v-card-title>
@@ -29,7 +29,7 @@
             :max-width="400" class="mx-auto pb-5">
           </v-img>
 
-          <v-card-actions class="d-block">
+          <div>
             <v-btn v-if="$user.userId == post.User.id || $user.userId ==1" type="submit" @click= deleteOnePost(post.id)
               color="red darken-1" text>
               Supprimer le message
@@ -39,32 +39,33 @@
               color="orange lighten-1" text>
               Modifier le message
             </v-btn>
-          </v-card-actions>
+          </div>
 
-          <v-card-actions>
-            <v-btn @click="show = !show" color="orange lighten-1" text>
+          <div class="btnShowComment">
+            <v-btn color="orange lighten-1" text :data-post-id="post.id" @click=showComment(post.id)>
               Commentaires
             </v-btn>
             <v-spacer></v-spacer>
             <v-btn
               icon
-              @click="show = !show"
+              :data-post-id="post.id"
+              @click=showComment(post.id)
             >
-            <v-icon>{{ show ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+            <v-icon>{{'mdi-chevron-up'}}</v-icon>
             </v-btn>
-          </v-card-actions>
+          </div>
 
           <v-expand-transition>
-            <div v-show="show">
+            <div  :data-post-id="post.id" class="comment" style="display:none">
               <v-divider></v-divider>
               <v-form>
-                <v-textarea filled name="message" v-model="message" label="Commentaire" :id="message + post.id"
+                <v-textarea filled :name="'message-' + post.id" label="Commentaire" :id="'message-'+post.id"
                   placeholder="Ajouter un commentaire" color="orange orange-darken-4" auto-grow required></v-textarea>
-                <v-card-actions>
-                  <v-btn @click= createOneComment(post.id) type="submit" color="orange lighten-1" text>
+                <div>
+                  <v-btn @click.prevent=createOneComment(post.id) type="submit" color="orange lighten-1" text>
                     Publier un commentaire
                   </v-btn>
-                </v-card-actions>
+                </div>
               </v-form>
             </div>
           </v-expand-transition>
@@ -73,21 +74,23 @@
                 <p>
                   {{comment.message}}
                 </p>
-                <v-card-action>
+                <div>
                 <v-btn v-if="$user.userId == comment.UserId || $user.userId ==1" type="submit"
                 @click= deleteOneComment(comment.id)
                   color="red darken-1" text>
                   Supprimer le commentaire
                 </v-btn>
-              </v-card-action>
+              </div>
           </v-card-text>
         </v-card>
       </v-flex>
     </v-layout>
+    
   </div>
 </template>
 
 <script>
+
   import axios from 'axios';
 
   export default {
@@ -97,8 +100,7 @@
         posts: [],
         comments: [],
         message: "",
-        file: "",
-        show: false,
+        file: "",      
       }
     },
 
@@ -109,6 +111,21 @@
     },
 
     methods: {
+
+      showComment(commentPostId) {
+        
+          let postId = commentPostId
+          let comment = document.querySelector("#postId-" + postId + " > div > div.comment")
+          if (comment.style.display === "none") {
+              comment.style.display = "block"
+              let chevronUp = document.querySelector("#postId-" + postId + "> div > div.btnShowComment > button > span > i")
+              chevronUp.classList = "v-icon notranslate mdi mdi-chevron-up theme--light"
+          } else {
+              comment.style.display = "none"
+              let chevronDown = document.querySelector("#postId-" + postId + "> div > div.btnShowComment > button > span > i")
+              chevronDown.classList = "v-icon notranslate mdi mdi-chevron-down theme--light"
+          }
+      },
       getAllPosts() {
         axios.get(`http://localhost:3000/api/post/`, {
             headers: {
@@ -130,10 +147,10 @@
             }
           })
 
-          .then(location.href = '/')
-          .catch((error) => {
-            error
-          });
+        .then(location.reload())
+        .catch((error) => {
+          error
+        });
       },
 
       modifyOnePost(postId) {
@@ -142,18 +159,25 @@
       },
 
       createOneComment(postId) {
-        let DataForm = new FormData();
-        DataForm.append('message', this.message);
+        //Recupère mon bon message
+        let eltId = `message-${postId}`
+        let goodMessage = document.getElementById(eltId).value
 
-        axios.post(`http://localhost:3000/api/post/${postId}/comments/`, DataForm, {
+        console.log(eltId , goodMessage , postId);
+
+        axios.post(`http://localhost:3000/api/post/${postId}/comments/`,
+
+          {
+            'message': goodMessage
+          }, 
+          {
             headers: {
-              'Content-Type': 'multipart/form-data',
+              'Content-Type': 'application/json',
               'Authorization': `Bearer ${this.$token}`
             }
           })
+        .then(location.reload())
 
-          .then(this.$root.$emit('Comments'))
-          .then(location.href = '/')
       },
 
       deleteOneComment(commentId) {
@@ -163,11 +187,10 @@
               'Authorization': `Bearer ${this.$token}`
             }
           })
-          .then(location.href = '/')
-
-          .catch((error) => {
+        .then(location.reload())
+        .catch((error) => {
             error
-          });
+        });
       },
     }
   }
@@ -189,4 +212,7 @@
       background-color: lightyellow;
     }
 
+    .btnShowComment {
+      display: flex;
+    }
 </style>
