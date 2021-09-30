@@ -2,8 +2,14 @@
     <div>
         <div class="nav">
          <router-link to="/">
-              <img
+              <img id="groupomaniaLogo"
               src="../assets/groupomania-logo.png" 
+              alt="Groupomania logo">
+         </router-link>
+
+         <router-link to="/">
+              <img id="iconGroupomania"
+              src="../assets/icon-groupomania.png" 
               alt="Groupomania logo">
          </router-link>
 
@@ -82,6 +88,9 @@ export default {
 </script> 
 
 <style scoped>
+#iconGroupomania {
+        display:none;
+    }
  .nav {
         display: flex;
         justify-content: space-between;
@@ -97,6 +106,7 @@ export default {
     nav a {
         padding: 10px;
         font-weight: 700;
+        color:black;
     }
     h1 {
         text-align: center;
@@ -136,7 +146,7 @@ export default {
         font-weight: 700;
     }
 
-     @media (max-width: 700px) {
+     @media (max-width: 800px) {
         .nav{
             flex-direction: column;
             padding: 30px 20px 20px 20px;
@@ -150,5 +160,15 @@ export default {
         form {
             max-width: 300px;
         }
+    
+        #groupomaniaLogo {
+            display: none;
+        }
+
+        #iconGroupomania {
+        display:block;
+        width:40px;
+        height: 40px;
+    }
     }
 </style>
