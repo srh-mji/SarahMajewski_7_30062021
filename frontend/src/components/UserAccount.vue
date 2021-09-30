@@ -2,7 +2,7 @@
     <div class="UserAccount">
         <h2>Bienvenue sur votre profil {{user.name}} !</h2>
         <v-flex>
-            <v-card class="mx-auto" max-width="400">
+            <v-card class="mx-auto ma-10" max-width="400">
                 <v-card-title>
                     <v-avatar size="36px">
                         <v-img v-if="user.image" alt="Avatar" :src="user.image">
@@ -15,7 +15,7 @@
                 </v-card-title>
                 <v-card-text>
                     <p>
-                        Création du compte le {{user.createdAt | moment("calendar")}}
+                        Création du compte le {{user.createdAt | moment("D/M/YYYY")}}
                     </p>
                     <p>
                         {{user.biography}}
@@ -24,16 +24,16 @@
             </v-card>
         </v-flex>
 
-        <v-form>
+        <v-form class="pa-2 formUserAccount">
             <v-text-field v-model="name" :counter="50" label="Nom" placeholder="Entrez votre nom" required
                 color="orange orange-darken-4">
             </v-text-field>
             <v-textarea filled name="biography" v-model="biography" label="Biographie" :id="biography"
-                placeholder="Parlez nous de vous" required color="orange orange-darken-4" :value="user.biography"
+                placeholder="Parlez nous de vous" required color="orange orange-darken-4"
                 auto-grow></v-textarea>
             <input type="file" accept="image/png, image/jpeg,
             image/bmp, image/gif" ref="file" name="Charger une image" />
-            <v-card-actions>
+            <div>
                 <v-btn type="submit" @click= updateAccount(user.id) color="orange lighten-1" text>
                     Modifier votre profil
                 </v-btn>
@@ -41,7 +41,7 @@
                 <v-btn type="submit" @click= deleteAccount(user.id) color="red lighten-2" text>
                     Supprimer le profil
                 </v-btn>
-            </v-card-actions>
+            </div>
         </v-form>
     </div>
 </template>
@@ -131,5 +131,11 @@
         margin-bottom: 30px;
         margin-top: 30px;
         font-size: 25px;
+    }
+    .formUserAccount {
+        border: 5px double #FFA726;
+        border-radius: 20px;
+        width:95%;
+        margin:auto;
     }
 </style>

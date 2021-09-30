@@ -1,23 +1,23 @@
 <template>
     <div class="editPost">
-        <h2>Modifier votre message</h2>
+        <h2>Modifier votre message {{user.name}} !</h2>
         <v-layout>
             <v-flex>
-                <v-card class="mx-auto" max-width="500">
+                <v-card class="mx-auto ma-10" max-width="400">
                     <v-card-title>
                     <v-avatar size="36px">
-                        <v-img v-if="post.User.image" alt="Avatar" :src="post.User.image">
+                        <v-img v-if="user.image" alt="Avatar" :src="user.image">
                         </v-img>
                         <v-icon dark v-else color="grey lighten-1">
                         mdi-account-circle
                         </v-icon>
                     </v-avatar>
-                    <span class="post-userName">Publié par {{post.User.name}}</span>
+                    <span class="post-userName">Publié par {{user.name}}</span>
                     </v-card-title>
 
                     <v-card-text>
                     <p>
-                        le {{post.createdAt | moment("calendar")}}
+                        le {{post.createdAt | moment("D/M/YYYY")}}
                     </p>
                     <p>
                         {{post.message}}
@@ -28,7 +28,7 @@
                     :max-width="400" class="mx-auto pb-5">
                     </v-img>
                 </v-card>
-                <v-form @submit.prevent="modifyOnePost(post.id)"
+                <v-form class="pa-2 formEditPost" @submit.prevent="modifyOnePost(post.id)"
                 >
                         <v-textarea
                             filled
@@ -46,7 +46,7 @@
                         accept="image/png, image/jpeg,
                         image/bmp, image/gif"
                         ref="file"
-                        name="Charger une image"
+                        name="image"
                         />
 
 
@@ -72,6 +72,7 @@ export default {
     data(){
         return {
              post: [],
+             user: [],
              message: "",
              file: "",
         }
@@ -98,29 +99,31 @@ export default {
             )
             .then(res => {
                 this.post = res.data;
+                this.user = res.data.User;
+                console.log(this.post , this.user)
             })
         },
         modifyOnePost(postId){
-            this.uploadImage();
-            let DataForm = new FormData();
-            DataForm.append('message' , this.message);
-            DataForm.append('image' , this.file);
+            if(this.message){
+                this.uploadImage();
+                let DataForm = new FormData();
+                DataForm.append('message' , this.message);
+                DataForm.append('image' , this.file);
 
-            axios.put(`http://localhost:3000/api/post/${postId}`, DataForm,
-                    {
-                        headers: {
-                            'Content-Type': 'multipart/form-data',
-                            'Authorization': `Bearer ${this.$token}`
+                axios.put(`http://localhost:3000/api/post/${postId}`, DataForm,
+                        {
+                            headers: {
+                                'Content-Type': 'multipart/form-data',
+                                'Authorization': `Bearer ${this.$token}`
+                            }
                         }
-                    }
-                )
-                .then(this.$root.$emit('Posts'))
-                .then(location.href = '/')
-                .then(localStorage.removeItem('postId'))
-                .catch((error) => {
-                    error
-                });
-            },
+                    )
+                    .then(location.href = '/')
+                    .then(localStorage.removeItem('postId'))
+                    .catch((error) => {
+                        error
+                    });
+            }},
 
     }
 }
@@ -134,5 +137,11 @@ export default {
         margin-bottom: 30px;
         margin-top: 30px;
         font-size: 25px;
+    }
+    .formEditPost {
+        border: 5px double #FFA726;
+        border-radius: 20px;
+        width:95%;
+        margin:auto;
     }
 </style>

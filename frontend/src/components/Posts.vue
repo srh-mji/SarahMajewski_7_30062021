@@ -18,7 +18,7 @@
 
           <v-card-text>
             <p>
-              le {{post.createdAt | moment("calendar")}}
+              le {{post.createdAt | moment("D/M/YYYY")}}
             </p>
             <p>
               {{post.message}}

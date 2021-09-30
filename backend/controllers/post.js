@@ -76,7 +76,6 @@ exports.createOnePost = (req, res, next) => {
     const userId = decodedToken.userId;
 
     try {
-        // if (userId !== null) {
             if (req.file) {
               image = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;
             } else {
@@ -90,7 +89,6 @@ exports.createOnePost = (req, res, next) => {
 
             .then(()=>res.status(201).json({ message: "Message créé !" }))
             .catch(()=> res.status(400).send({ error: "Erreur " }))
-            // }
         } catch (error) { return res.status(500).send({ error: "Erreur serveur" })}
 };
 
@@ -157,6 +155,17 @@ exports.createOneComment = (req, res, next) => {
     const token = req.headers.authorization.split(' ')[1];
     const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
     const userId = decodedToken.userId;
+
+    const message = req.body.message;
+
+    console.log(req.body)
+
+     // checking fields
+     if (message === null || message === '') {
+        return res.status(400).json({
+          'error': "Les champs 'nom' et 'biographie' doivent être remplis"
+        });
+      }
 
     const comment = new Comment({
         message: req.body.message,

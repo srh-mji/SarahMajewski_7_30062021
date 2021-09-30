@@ -55,22 +55,24 @@ export default {
             this.file = file;
         },
         createOnePost(){
-            this.uploadImage();
-            let DataForm = new FormData();
-            DataForm.append('message' , this.message);
-            DataForm.append('image' , this.file);
+            if(this.message){
+                this.uploadImage();
+                let DataForm = new FormData();
+                DataForm.append('message' , this.message);
+                DataForm.append('image' , this.file);
 
-            axios.post(`http://localhost:3000/api/post/`, DataForm,
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                        'Authorization': `Bearer ${this.$token}`
+                axios.post(`http://localhost:3000/api/post/`, DataForm,
+                    {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                            'Authorization': `Bearer ${this.$token}`
+                        }
                     }
-                }
-            )
-            
-            .then(this.$root.$emit('Posts'))
-            .then(location.href = '/')
+                )
+                
+                .then(this.$root.$emit('Posts'))
+                .then(location.href = '/')
+            }
         },
     }
 }

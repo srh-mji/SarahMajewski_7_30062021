@@ -16,7 +16,7 @@
                     </v-card-title>
                     <v-card-text>
                         <p>
-                        Création du compte le {{user.createdAt | moment("calendar")}}
+                        Création du compte le {{user.createdAt | moment("D/M/YYYY")}}
                         </p>
                         <p>
                             {{user.biography}}
