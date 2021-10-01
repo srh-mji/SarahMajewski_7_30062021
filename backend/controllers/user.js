@@ -28,7 +28,7 @@ passwordSchema
   .is().not().oneOf(['Passw0rd', 'Password123']);
 
 
-// Middleware that create a new user
+// User signup
 exports.signup = (req, res, next) => {
   if (!req.body.name || !req.body.email || !req.body.password) {
     return res.status(400).json({
@@ -75,8 +75,8 @@ exports.signup = (req, res, next) => {
     });
   }
 };
-// Middleware for user login 
 
+// User login 
 exports.login = (req, res, next) => {
   // check if field password is empty
   if (!req.body.password) {
@@ -131,7 +131,7 @@ exports.login = (req, res, next) => {
   }
 };
 
-// Middleware to get user profil 
+// Get user Account 
 exports.getAccount = (req, res, next) => {
   User.findOne({
       where: {
@@ -147,7 +147,7 @@ exports.getAccount = (req, res, next) => {
     }));
 };
 
-// Middleware to get all users
+// Get all Users
 exports.getAllUsers = (req, res, next) => {
   User.findAll()
     .then(users => {
@@ -158,76 +158,76 @@ exports.getAllUsers = (req, res, next) => {
     }));
 };
 
-// Middleware to update user profil
+// Update user Account
 exports.updateAccount = (req, res, next) => {
   User.findOne({
-    where: {
-      id: req.params.id
-    }
-  })
-  .then((user) => {
+      where: {
+        id: req.params.id
+      }
+    })
+    .then((user) => {
 
-    if(!user){
-      return res.status(400).json({
-        'error': "user"
-      });
-    }
+      if (!user) {
+        return res.status(400).json({
+          'error': "user"
+        });
+      }
 
-    const name = req.body.name;
-    const biography = req.body.biography;
+      const name = req.body.name;
+      const biography = req.body.biography;
 
-    // checking fields
-    if (name === null || name === '' || biography === null || biography === '') {
-      return res.status(400).json({
-        'error': "Les champs 'nom' et 'biographie' doivent être remplis"
-      });
-    }
+      // checking fields
+      if (name === null || name === '' || biography === null || biography === '') {
+        return res.status(400).json({
+          'error': "Les champs 'nom' et 'biographie' doivent être remplis"
+        });
+      }
 
-    // add/change profile image 
-    const userObject = req.file ? {
-      ...req.body,
-      image: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
-    } : {
+      // add/change profile image 
+      const userObject = req.file ? {
+        ...req.body,
+        image: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
+      } : {
         ...req.body,
         image: null
-    }
+      }
 
-    User.update({
+      User.update({
           ...userObject,
           id: req.params.id
-      }, {
+        }, {
           where: {
-              id: req.params.id
+            id: req.params.id
           }
-      })
-      .then(() => res.status(200).json({
+        })
+        .then(() => res.status(200).json({
           message: "User modifié !"
-      }))
-      .catch(error => res.status(400).json({
+        }))
+        .catch(error => res.status(400).json({
           error
-      }))
+        }))
 
 
-  })
-  .catch(error => res.status(400).json({
+    })
+    .catch(error => res.status(400).json({
       error
-  }));
+    }));
 
 
 
 };
 
-// Middleware to delete user account
+// Delete user account
 exports.deleteAccount = (req, res, next) => {
   User.destroy({
-    where: {
+      where: {
         id: req.params.id
-    }
-})
-.then(() => res.status(200).json({
-    message: "Utilisateur supprimé !"
-}))
-.catch(error => res.status(400).json({
-    error
-}))
+      }
+    })
+    .then(() => res.status(200).json({
+      message: "Utilisateur supprimé !"
+    }))
+    .catch(error => res.status(400).json({
+      error
+    }))
 };
