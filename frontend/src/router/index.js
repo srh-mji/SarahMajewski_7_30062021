@@ -8,8 +8,7 @@ import Member from '../views/Member.vue'
 
 Vue.use(VueRouter)
 
-const routes = [
-  {
+const routes = [{
     path: '/',
     name: 'Home',
     component: Home
@@ -38,7 +37,7 @@ const routes = [
 
 const router = new VueRouter({
   routes,
-  mode : 'history'
+  mode: 'history'
 })
 
 export default router

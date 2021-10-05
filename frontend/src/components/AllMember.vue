@@ -11,12 +11,11 @@
                                 mdi-account-circle
                             </v-icon>
                         </v-avatar>
-
                         <span class="post-userName">{{user.name}}</span>
                     </v-card-title>
                     <v-card-text>
                         <p>
-                        Création du compte le {{user.createdAt | moment("D/M/YYYY")}}
+                            Création du compte le {{user.createdAt | moment("D/M/YYYY")}}
                         </p>
                         <p>
                             {{user.biography}}
@@ -52,29 +51,28 @@
         methods: {
             getAllUsers() {
                 axios.get(`http://localhost:3000/api/user/account/`, {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${this.$token}`
-                        }
-                    })
-                    .then(res => {
-                        this.users = res.data;
-                        console.log(this.users)
-                    })
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${this.$token}`
+                    }
+                })
+                .then(res => {
+                    this.users = res.data;
+                    console.log(this.users)
+                })
             },
 
             deleteAccount(userId) {
                 axios.delete(`http://localhost:3000/api/user/account/${userId}`, {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${this.$token}`
-                        }
-                    })
-                    .then(location.href = '/member', )
-
-                    .catch((error) => {
-                        error
-                    })
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${this.$token}`
+                    }
+                })
+                .then(location.href = '/member')
+                .catch((error) => {
+                    error
+                })
             },
         }
     }

@@ -30,12 +30,12 @@
           </v-img>
 
           <div>
-            <v-btn v-if="$user.userId == post.User.id || $user.userId ==1" type="submit" @click= deleteOnePost(post.id)
+            <v-btn v-if="$user.userId == post.User.id || $user.userId ==1" type="submit" @click=deleteOnePost(post.id)
               color="red darken-1" text>
               Supprimer le message
             </v-btn>
 
-            <v-btn v-if="$user.userId == post.User.id" type="submit" @click= modifyOnePost(post.id)
+            <v-btn v-if="$user.userId == post.User.id" type="submit" @click=modifyOnePost(post.id)
               color="orange lighten-1" text>
               Modifier le message
             </v-btn>
@@ -46,17 +46,13 @@
               Commentaires
             </v-btn>
             <v-spacer></v-spacer>
-            <v-btn
-              icon
-              :data-post-id="post.id"
-              @click=showComment(post.id)
-            >
-            <v-icon>{{'mdi-chevron-up'}}</v-icon>
+            <v-btn icon :data-post-id="post.id" @click=showComment(post.id)>
+              <v-icon>{{'mdi-chevron-up'}}</v-icon>
             </v-btn>
           </div>
 
           <v-expand-transition>
-            <div  :data-post-id="post.id" class="comment" style="display:none">
+            <div :data-post-id="post.id" class="comment" style="display:none">
               <v-divider></v-divider>
               <v-form>
                 <v-textarea filled :name="'message-' + post.id" label="Commentaire" :id="'message-'+post.id"
@@ -69,23 +65,20 @@
               </v-form>
             </div>
           </v-expand-transition>
-          <v-card-text class="commentMessage my-2" v-for="comment in post.Comments" :key="comment.id" 
-          >
-                <p>
-                  {{comment.message}}
-                </p>
-                <div>
-                <v-btn v-if="$user.userId == comment.UserId || $user.userId ==1" type="submit"
-                @click= deleteOneComment(comment.id)
-                  color="red darken-1" text>
-                  Supprimer le commentaire
-                </v-btn>
-              </div>
+          <v-card-text class="commentMessage my-2" v-for="comment in post.Comments" :key="comment.id">
+            <p>
+              {{comment.message}}
+            </p>
+            <div>
+              <v-btn v-if="$user.userId == comment.UserId || $user.userId ==1" type="submit"
+                @click=deleteOneComment(comment.id) color="red darken-1" text>
+                Supprimer le commentaire
+              </v-btn>
+            </div>
           </v-card-text>
         </v-card>
       </v-flex>
     </v-layout>
-    
   </div>
 </template>
 

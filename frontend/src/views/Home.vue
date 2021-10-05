@@ -15,15 +15,15 @@ import NewPost from '@/components/NewPost.vue';
 import Posts from '@/components/Posts.vue';
 
 export default({
-    name : 'Home',
-    components : {
-         Login,
-         Header,
-         NewPost,
-         Posts,
-    },
+  name : 'Home',
+  components : {
+    Login,
+    Header,
+    NewPost,
+    Posts,
+  },
 
-    data() {
+  data() {
     return{
       connected: true
     };
@@ -32,16 +32,17 @@ export default({
   created(){
     this.checkConnected()
   },
-   methods: {
-    checkConnected(){
-      if(localStorage.user !== undefined){
-        this.connected = true;
-        console.log('Utilisateur connecté !');
-      }
-      else if(localStorage.user == undefined){
-        this.connected = false;
-        console.log('Utilisateur non connecté !');
-      }
-    }},
+  
+  methods: {
+  checkConnected(){
+    if(localStorage.user !== undefined){
+      this.connected = true;
+      console.log('Utilisateur connecté !');
+    }
+    else if(localStorage.user == undefined){
+      this.connected = false;
+      console.log('Utilisateur non connecté !');
+    }
+  }},
 })
 </script>

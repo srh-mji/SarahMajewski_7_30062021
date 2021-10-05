@@ -23,22 +23,20 @@
                 </v-card-text>
             </v-card>
         </v-flex>
-
         <v-form class="pa-2 formUserAccount">
             <v-text-field v-model="name" :counter="50" label="Nom" placeholder="Entrez votre nom" required
                 color="orange orange-darken-4">
             </v-text-field>
             <v-textarea filled name="biography" v-model="biography" label="Biographie" :id="biography"
-                placeholder="Parlez nous de vous" required color="orange orange-darken-4"
-                auto-grow></v-textarea>
+                placeholder="Parlez nous de vous" required color="orange orange-darken-4" auto-grow></v-textarea>
             <input type="file" accept="image/png, image/jpeg,
             image/bmp, image/gif" ref="file" name="Charger une image" />
             <div>
-                <v-btn type="submit" @click= updateAccount(user.id) color="orange lighten-1" text>
+                <v-btn type="submit" @click=updateAccount(user.id) color="orange lighten-1" text>
                     Modifier votre profil
                 </v-btn>
 
-                <v-btn type="submit" @click= deleteAccount(user.id) color="red lighten-2" text>
+                <v-btn type="submit" @click=deleteAccount(user.id) color="red lighten-2" text>
                     Supprimer le profil
                 </v-btn>
             </div>
@@ -122,6 +120,7 @@
         }
     }
 </script>
+
 <style scoped>
     h2 {
         text-align: center;

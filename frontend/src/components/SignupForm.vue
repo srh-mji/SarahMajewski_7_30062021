@@ -1,38 +1,39 @@
 <template>
     <div>
         <div class="nav">
-         <router-link to="/">
-              <img
-              src="../assets/groupomania-logo.png" 
-              alt="Groupomania logo">
-         </router-link>
-
-         <nav>
-            <router-link to='/signup'>
-                <div>S'inscrire</div>
+            <router-link to="/">
+                <img src="../assets/groupomania-logo.png" alt="Groupomania logo">
             </router-link>
-            <router-link to='/'>
-            <div> Se connecter</div>
-            </router-link>
-        </nav>
+            <nav>
+                <router-link to='/signup'>
+                    <div>S'inscrire</div>
+                </router-link>
+                <router-link to='/'>
+                    <div> Se connecter</div>
+                </router-link>
+            </nav>
         </div>
-         <h1> S'inscrire </h1>
-         <form action="" @submit.prevent="signup">
-             <div class="form-group">
+        <h1> S'inscrire </h1>
+        <form action="" @submit.prevent="signup">
+            <div class="form-group">
                 <label for="nom">Nom </label>
-                <input type="name" class="form-control" v-model="name" id="name" placeholder="Entrez votre nom" maxlength="50" required>
+                <input type="name" class="form-control" v-model="name" id="name" placeholder="Entrez votre nom"
+                    maxlength="50" required>
             </div>
-             <div class="form-group">
+            <div class="form-group">
                 <label for="email">Adresse mail </label>
-                <input type="email" class="form-control" v-model="email" id="email" placeholder="Entrez votre adresse mail" maxlength="64" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required>
+                <input type="email" class="form-control" v-model="email" id="email"
+                    placeholder="Entrez votre adresse mail" maxlength="64"
+                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required>
             </div>
             <div class="form-group">
                 <label for="password">Mot de passe </label>
-                <input type="password" class="form-control" v-model="password" id="password" placeholder="Entrez votre mot de passe" minlength="8" maxlength="25" required>
+                <input type="password" class="form-control" v-model="password" id="password"
+                    placeholder="Entrez votre mot de passe" minlength="8" maxlength="25" required>
             </div>
             <div class="errorMessage">{{message}}</div>
-            <button  type="submit"> Envoyer </button>
-         </form>
+            <button type="submit"> Envoyer </button>
+        </form>
     </div>
 </template>
 
@@ -41,42 +42,38 @@ import axios from 'axios';
 
 export default {
     name: 'SignupForm',
-     data() {
+    data() {
         return {
             message: "",
             email: "",
             password: "",
-            name:"",
+            name: "",
         };
     },
 
     methods: {
-        signup(){
-            axios.post(`http://localhost:3000/api/user/signup`,
-                    {
-                        'name' : this.name,
-                       'password' : this.password,
-                        'email' : this.email,
-                    },
-                    {
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
+        signup() {
+            axios.post(`http://localhost:3000/api/user/signup`, {
+                    'name': this.name,
+                    'password': this.password,
+                    'email': this.email,
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json'
                     }
-                )
+                })
                 .then(res => {
-                localStorage.setItem('user', JSON.stringify(res.data));
-                location.href = '/';
-            })
+                    localStorage.setItem('user', JSON.stringify(res.data));
+                    location.href = '/';
+                })
                 .catch((error) => {
                     if (error.response.status === 401) {
                         this.message = "E-mail non disponible.";
-                    }  
+                    }
                 });
-            }
+        }
     }
 }
-
 </script> 
 
 <style scoped>

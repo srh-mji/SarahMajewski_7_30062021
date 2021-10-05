@@ -1,43 +1,40 @@
 <template>
     <div>
         <div class="nav">
-         <router-link to="/">
-              <img id="groupomaniaLogo"
-              src="../assets/groupomania-logo.png" 
-              alt="Groupomania logo">
-         </router-link>
-
-         <router-link to="/">
-              <img id="iconGroupomania"
-              src="../assets/icon-groupomania.png" 
-              alt="Groupomania logo">
-         </router-link>
-
-         <nav>
-            <router-link to='/signup'>
-                <div>S'inscrire</div>
+            <router-link to="/">
+                <img id="groupomaniaLogo" src="../assets/groupomania-logo.png" alt="Groupomania logo">
             </router-link>
-            <router-link to='/'>
-            <div> Se connecter</div>
+
+            <router-link to="/">
+                <img id="iconGroupomania" src="../assets/icon-groupomania.png" alt="Groupomania logo">
             </router-link>
-        </nav>
+
+            <nav>
+                <router-link to='/signup'>
+                    <div>S'inscrire</div>
+                </router-link>
+                <router-link to='/'>
+                    <div> Se connecter</div>
+                </router-link>
+            </nav>
         </div>
-         <h1> Connexion</h1>
-         <form action="" @submit.prevent="login">
-             <div class="form-group">
+        <h1> Connexion</h1>
+        <form action="" @submit.prevent="login">
+            <div class="form-group">
                 <label for="email">Adresse mail </label>
-                <input type="email" class="form-control"  v-model="email" id="email" placeholder="Entrez votre adresse mail" maxlength="45" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required>
+                <input type="email" class="form-control" v-model="email" id="email"
+                    placeholder="Entrez votre adresse mail" maxlength="45"
+                    pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required>
             </div>
             <div class="form-group">
                 <label for="password">Mot de passe </label>
-                <input type="password" class="form-control" v-model="password" id="password" placeholder="Entrez votre mot de passe" minlength="8" maxlength="25" required>
+                <input type="password" class="form-control" v-model="password" id="password"
+                    placeholder="Entrez votre mot de passe" minlength="8" maxlength="25" required>
             </div>
             <div class="errorMessage">{{message}}</div>
             <button type="submit"> Envoyer </button>
-         </form>
+        </form>
     </div>
-
-    
 </template>
 
 <script>
