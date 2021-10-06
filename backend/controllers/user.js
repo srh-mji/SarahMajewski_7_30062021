@@ -166,7 +166,6 @@ exports.updateAccount = (req, res, next) => {
       }
     })
     .then((user) => {
-
       if (!user) {
         return res.status(400).json({
           'error': "user"
@@ -206,27 +205,55 @@ exports.updateAccount = (req, res, next) => {
         .catch(error => res.status(400).json({
           error
         }))
-
-
     })
     .catch(error => res.status(400).json({
       error
     }));
-
-
-
 };
 
 // Delete user account
 exports.deleteAccount = (req, res, next) => {
-  User.destroy({
+  const token = req.headers.authorization.split(' ')[1];
+  const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+  const userId = decodedToken.userId;
+
+  User.findOne({
       where: {
-        id: req.params.id
+        id: req.params.id,
       }
     })
-    .then(() => res.status(200).json({
-      message: "Utilisateur supprimé !"
-    }))
+    .then((User) => {
+      if (userId == User.id || userId == 1) {
+        if (User.image) {
+          const filename = User.image.split("/images")[1];
+          fs.unlink(`images/${filename}`, () => {
+            User.destroy({
+                where: {
+                  id: req.params.id
+                }
+              })
+              .then(() => res.status(200).json({
+                message: "Utilisateur supprimé !"
+              }))
+              .catch(error => res.status(400).json({
+                error
+              }))
+          });
+        } else {
+          User.destroy({
+              where: {
+                id: req.params.id
+              }
+            })
+            .then(() => res.status(200).json({
+              message: "Utilisateur supprimé !"
+            }))
+            .catch(error => res.status(400).json({
+              error
+            }))
+        }
+      }
+    })
     .catch(error => res.status(400).json({
       error
     }))

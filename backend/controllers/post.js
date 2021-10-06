@@ -26,10 +26,14 @@ exports.getAllPosts = (req, res, next) => {
                     },
                     {
                         model: Comment,
-                        attributes: ["message", "image", "UserId", "PostId", "id"],
+                        attributes: ["message", "UserId", "PostId", "id"],
                         order: [
                             ["createdAt", "DESC"]
                         ],
+                        include: [{
+                            model: User,
+                            attributes: ["name", "id", "image"],
+                        }, ],
                     },
                 ],
             })
@@ -59,10 +63,10 @@ exports.getOnePost = (req, res, next) => {
                         order: [
                             ["createdAt", "DESC"]
                         ],
-                        attributes: ["message", "image", "UserId", "PostId", "id"],
+                        attributes: ["message", "UserId", "PostId", "id"],
                         include: [{
                             model: User,
-                            attributes: ["image", "name"],
+                            attributes: ["name", "id", "image"],
                         }, ],
                     },
                 ],
@@ -143,17 +147,34 @@ exports.deleteOnePost = (req, res, next) => {
         })
         .then((Post) => {
             if (userId == Post.UserId || userId == 1) {
-                Post.destroy({
-                        where: {
-                            id: req.params.id
-                        }
-                    })
-                    .then(() => res.status(200).json({
-                        message: "Post supprimé !"
-                    }))
-                    .catch(error => res.status(400).json({
-                        error
-                    }))
+                if (Post.image) {
+                    const filename = Post.image.split("/images")[1];
+                    fs.unlink(`images/${filename}`, () => {
+                        Post.destroy({
+                                where: {
+                                    id: req.params.id
+                                }
+                            })
+                            .then(() => res.status(200).json({
+                                message: "Post supprimé !"
+                            }))
+                            .catch(error => res.status(400).json({
+                                error
+                            }))
+                    });
+                } else {
+                    Post.destroy({
+                            where: {
+                                id: req.params.id
+                            }
+                        })
+                        .then(() => res.status(200).json({
+                            message: "Post supprimé !"
+                        }))
+                        .catch(error => res.status(400).json({
+                            error
+                        }))
+                }
             }
         })
         .catch(error => res.status(400).json({
