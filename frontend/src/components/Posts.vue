@@ -66,12 +66,20 @@
             </div>
           </v-expand-transition>
           <v-card-text class="commentMessage my-2" v-for="comment in post.Comments" :key="comment.id">
+            <v-avatar size="36px">
+              <v-img v-if="comment.User.image" alt="Avatar" :src="comment.User.image">
+              </v-img>
+              <v-icon dark v-else color="grey lighten-1">
+                mdi-account-circle
+              </v-icon>
+            </v-avatar>
+            <span class="post-userName">Publié par {{comment.User.name}}</span>
             <p>
               {{comment.message}}
             </p>
             <div>
               <v-btn v-if="$user.userId == comment.UserId || $user.userId ==1" type="submit"
-                @click=deleteOneComment(comment.id) color="red darken-1" text>
+                @click=deleteOneComment(comment.id) color="red darken-1" text class="pa-0">
                 Supprimer le commentaire
               </v-btn>
             </div>
@@ -152,7 +160,6 @@
       },
 
       createOneComment(postId) {
-        //Recupère mon bon message
         let eltId = `message-${postId}`
         let goodMessage = document.getElementById(eltId).value
 
