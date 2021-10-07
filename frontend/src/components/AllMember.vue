@@ -1,11 +1,11 @@
 <template>
     <div class="UserAccount">
         <h2>Tous nos membres</h2>
-        <v-layout wrap>
-            <v-flex md4 v-for="user in users" :key="user.id">
-                <v-card class="mx-auto" max-width="400">
+        <v-layout class="d-flex flex-column justify-center flex-nowrap" >
+            <v-flex v-for="user in users" :key="user.id">
+                <v-card class="pa-4 ma-6 mx-auto" max-width="500">
                     <v-card-title>
-                        <v-avatar size="36px">
+                        <v-avatar size="36px" class="mr-2">
                             <img v-if="user.image" alt="Avatar" :src="user.image">
                             <v-icon dark v-else color="grey lighten-1">
                                 mdi-account-circle
@@ -21,8 +21,12 @@
                             {{user.biography}}
                         </p>
                     </v-card-text>
-                    <button v-if="$user.userId == 1" type="submit" @click= deleteAccount(user.id)> Supprimer le profil
-                    </button>
+                    <v-btn 
+                    v-if="$user.userId == 1" 
+                    type="submit"
+                        @click= deleteAccount(user.id) color="red darken-1" text class="pa-0">
+                        Supprimer le profil
+                    </v-btn>
                 </v-card>
             </v-flex>
         </v-layout>
@@ -58,7 +62,6 @@
                 })
                 .then(res => {
                     this.users = res.data;
-                    console.log(this.users)
                 })
             },
 
