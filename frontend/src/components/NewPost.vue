@@ -1,35 +1,17 @@
 <template>
     <div class="newPost">
         <h2>Publier un message</h2>
-        <v-form class="pa-2 formNewPost" @submit.prevent="createOnePost()"
-        >
-            <v-textarea
-                filled
-                name="message"
-                v-model="message"
-                label="Message"
-                :id="message" 
-                placeholder="Quoi de neuf ?"
-                color="red lighten-3"
-                auto-grow
-                required
-            ></v-textarea>
+        <v-form class="pa-2 formNewPost" @submit.prevent="createOnePost()">
+            <v-textarea filled name="message" v-model="message" label="Message" :id="message"
+                placeholder="Quoi de neuf ?" color="red lighten-3" auto-grow required>
+            </v-textarea>
 
-            <input
-            type="file"
-            accept="image/png, image/jpeg,
-            image/bmp, image/gif"
-            ref="file"
-            name="Charger une image"
-            />
-
+            <input type="file" accept="image/png, image/jpeg,
+            image/bmp, image/gif" ref="file" name="Charger une image" />
 
             <v-card-actions>
-                <v-btn
-                    type="submit" 
-                    color="red lighten-4"
-                >
-                 Publier un message
+                <v-btn type="submit" color="red lighten-4">
+                    Publier un message
                 </v-btn>
             </v-card-actions>
         </v-form>
@@ -54,6 +36,7 @@ export default {
             const file = this.$refs.file.files[0];
             this.file = file;
         },
+        
         createOnePost(){
             if(this.message){
                 this.uploadImage();
@@ -69,7 +52,6 @@ export default {
                         }
                     }
                 )
-                
                 .then(this.$root.$emit('Posts'))
                 .then(location.href = '/')
             }
@@ -77,6 +59,7 @@ export default {
     }
 }
 </script>
+
 <style scoped>
     h2 {
         text-align: center;

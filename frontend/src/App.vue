@@ -1,9 +1,9 @@
 <template>
-<v-app>
-  <div id="app">
-    <router-view></router-view>
-  </div>
-</v-app>
+  <v-app>
+    <div id="app">
+      <router-view></router-view>
+    </div>
+  </v-app>
 </template>
 
 <style>
@@ -11,15 +11,21 @@
     margin:0;
   }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  
   a.router-link-exact-active {
-  color: inherit;
-}
+    color: inherit;
+  }
 
-#app {
-  font-family:Arial, Helvetica, sans-serif;
-}
+  #app {
+    font-family:Arial, Helvetica, sans-serif;
+  }
+  
+  .v-avatar img {
+    object-fit: cover;
+  }
+ 
 </style>

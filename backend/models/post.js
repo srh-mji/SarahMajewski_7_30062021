@@ -20,10 +20,6 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       type: DataTypes.STRING
     },
-    link_message: {
-      allowNull: true,
-      type: DataTypes.STRING
-    },
     image: {
       allowNull: true,
       type: DataTypes.STRING

@@ -20,10 +20,6 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING
       },
-      link_message: {
-        allowNull: true,
-        type: Sequelize.STRING
-      },
       image: {
         allowNull: true,
         type: Sequelize.STRING

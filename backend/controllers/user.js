@@ -28,7 +28,7 @@ passwordSchema
   .is().not().oneOf(['Passw0rd', 'Password123']);
 
 
-// Middleware that create a new user
+// User signup
 exports.signup = (req, res, next) => {
   if (!req.body.name || !req.body.email || !req.body.password) {
     return res.status(400).json({
@@ -75,8 +75,8 @@ exports.signup = (req, res, next) => {
     });
   }
 };
-// Middleware for user login 
 
+// User login 
 exports.login = (req, res, next) => {
   // check if field password is empty
   if (!req.body.password) {
@@ -131,7 +131,7 @@ exports.login = (req, res, next) => {
   }
 };
 
-// Middleware to get user profil 
+// Get user Account 
 exports.getAccount = (req, res, next) => {
   User.findOne({
       where: {
@@ -147,7 +147,7 @@ exports.getAccount = (req, res, next) => {
     }));
 };
 
-// Middleware to get all users
+// Get all Users
 exports.getAllUsers = (req, res, next) => {
   User.findAll()
     .then(users => {
@@ -158,76 +158,139 @@ exports.getAllUsers = (req, res, next) => {
     }));
 };
 
-// Middleware to update user profil
+// Update user Account
 exports.updateAccount = (req, res, next) => {
+  const token = req.headers.authorization.split(' ')[1];
+  const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+  const userId = decodedToken.userId;
+
   User.findOne({
-    where: {
-      id: req.params.id
-    }
-  })
-  .then((user) => {
+      where: {
+        id: req.params.id
+      }
+    })
+    .then((user) => {
+      if (!user) {
+        return res.status(400).json({
+          'error': "user"
+        });
+      }
 
-    if(!user){
-      return res.status(400).json({
-        'error': "user"
-      });
-    }
+      const name = req.body.name;
+      const biography = req.body.biography;
 
-    const name = req.body.name;
-    const biography = req.body.biography;
+      // checking fields
+      if (name === null || name === '' || biography === null || biography === '') {
+        return res.status(400).json({
+          'error': "Les champs 'nom' et 'biographie' doivent être remplis"
+        });
+      }
 
-    // checking fields
-    if (name === null || name === '' || biography === null || biography === '') {
-      return res.status(400).json({
-        'error': "Les champs 'nom' et 'biographie' doivent être remplis"
-      });
-    }
-
-    // add/change profile image 
-    const userObject = req.file ? {
-      ...req.body,
-      image: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
-    } : {
-        ...req.body,
-        image: null
-    }
-
-    User.update({
-          ...userObject,
-          id: req.params.id
-      }, {
-          where: {
-              id: req.params.id
+      if (userId == user.id) {
+        if (req.file && user.image) {
+          const filename = user.image.split("/images")[1];
+          fs.unlink(`images/${filename}`, (err) => {
+            if (err) {
+              console.log("failed to delete local image:" + err);
+            } else {
+              console.log('successfully deleted local image');
+            }
+          });
+          const userObject = req.file ? {
+            ...req.body,
+            image: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
+          } : {
+            ...req.body,
+            image: user.image
           }
-      })
-      .then(() => res.status(200).json({
-          message: "User modifié !"
-      }))
-      .catch(error => res.status(400).json({
-          error
-      }))
-
-
-  })
-  .catch(error => res.status(400).json({
+          User.update({
+              ...userObject,
+              id: req.params.id
+            }, {
+              where: {
+                id: req.params.id
+              }
+            })
+            .then(() => res.status(200).json({
+              message: "User modifié !"
+            }))
+            .catch(error => res.status(400).json({
+              error
+            }))
+        } else {
+          const userObject = req.file ? {
+            ...req.body,
+            image: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
+          } : {
+            ...req.body,
+            image: user.image
+          }
+          User.update({
+              ...userObject,
+              id: req.params.id
+            }, {
+              where: {
+                id: req.params.id
+              }
+            })
+            .then(() => res.status(200).json({
+              message: "User modifié !"
+            }))
+            .catch(error => res.status(400).json({
+              error
+            }))
+        }
+      }
+    })
+    .catch(error => res.status(400).json({
       error
-  }));
-
-
-
+    }))
 };
 
-// Middleware to delete user account
+// Delete user account
 exports.deleteAccount = (req, res, next) => {
-  User.destroy({
-    where: {
-        id: req.params.id
-    }
-})
-.then(() => res.status(200).json({
-    message: "Utilisateur supprimé !"
-}))
-.catch(error => res.status(400).json({
-    error
-}))
+  const token = req.headers.authorization.split(' ')[1];
+  const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+  const userId = decodedToken.userId;
+
+  User.findOne({
+      where: {
+        id: req.params.id,
+      }
+    })
+    .then((User) => {
+      if (userId == User.id || userId == 1) {
+        if (User.image) {
+          const filename = User.image.split("/images")[1];
+          fs.unlink(`images/${filename}`, () => {
+            User.destroy({
+                where: {
+                  id: req.params.id
+                }
+              })
+              .then(() => res.status(200).json({
+                message: "Utilisateur supprimé !"
+              }))
+              .catch(error => res.status(400).json({
+                error
+              }))
+          });
+        } else {
+          User.destroy({
+              where: {
+                id: req.params.id
+              }
+            })
+            .then(() => res.status(200).json({
+              message: "Utilisateur supprimé !"
+            }))
+            .catch(error => res.status(400).json({
+              error
+            }))
+        }
+      }
+    })
+    .catch(error => res.status(400).json({
+      error
+    }))
 };

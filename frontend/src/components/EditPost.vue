@@ -3,7 +3,7 @@
         <h2>Modifier votre message {{user.name}} !</h2>
         <v-layout>
             <v-flex>
-                <v-card class="mx-auto ma-10" max-width="400">
+                <v-card class="pa-4 pb-8 ma-6 mx-auto" max-width="500">
                     <v-card-title>
                     <v-avatar size="36px">
                         <v-img v-if="user.image" alt="Avatar" :src="user.image">
@@ -28,7 +28,7 @@
                     :max-width="400" class="mx-auto pb-5">
                     </v-img>
                 </v-card>
-                <v-form class="pa-2 formEditPost" @submit.prevent="modifyOnePost(post.id)"
+                <v-form class="pa-2 mb-8 formEditPost" @submit.prevent="modifyOnePost(post.id)"
                 >
                         <v-textarea
                             filled
@@ -71,38 +71,41 @@ export default {
     name: 'EditPost',
     data(){
         return {
-             post: [],
-             user: [],
-             message: "",
-             file: "",
+            post: [],
+            user: [],
+            message: "",
+            file: "",
         }
     },
+
     mounted() {
         if(localStorage.user != undefined){
             this.getOnePost();
         }
     },
+
     methods: {
         uploadImage() {
             const file = this.$refs.file.files[0];
             this.file = file;
         },
+
         getOnePost(){
             let postId= localStorage.getItem('postId');
             axios.get(`http://localhost:3000/api/post/${postId}`,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${this.$token}`
-                    }
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${this.$token}`
                 }
-            )
+            })
             .then(res => {
                 this.post = res.data;
                 this.user = res.data.User;
                 console.log(this.post , this.user)
             })
         },
+
         modifyOnePost(postId){
             if(this.message){
                 this.uploadImage();
@@ -111,18 +114,18 @@ export default {
                 DataForm.append('image' , this.file);
 
                 axios.put(`http://localhost:3000/api/post/${postId}`, DataForm,
-                        {
-                            headers: {
-                                'Content-Type': 'multipart/form-data',
-                                'Authorization': `Bearer ${this.$token}`
-                            }
+                    {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                            'Authorization': `Bearer ${this.$token}`
                         }
-                    )
-                    .then(location.href = '/')
-                    .then(localStorage.removeItem('postId'))
-                    .catch((error) => {
-                        error
-                    });
+                    }
+                )
+                .then(location.href = '/')
+                .then(localStorage.removeItem('postId'))
+                .catch((error) => {
+                    error
+                });
             }},
 
     }
