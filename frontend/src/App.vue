@@ -23,4 +23,9 @@
   #app {
     font-family:Arial, Helvetica, sans-serif;
   }
+  
+  .v-avatar img {
+    object-fit: cover;
+  }
+ 
 </style>
