@@ -68,7 +68,7 @@ export default {
                 })
                 .catch((error) => {
                     if (error.response.status === 401) {
-                        this.message = "E-mail non disponible.";
+                        this.message = "Erreur e-mail ou mot de passe";
                     }
                 });
         }
@@ -92,6 +92,7 @@ export default {
     nav a {
         padding: 10px;
         font-weight: 700;
+        color:black;
     }
     h1 {
         text-align: center;
