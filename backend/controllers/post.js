@@ -122,14 +122,14 @@ exports.modifyOnePost = (req, res, next) => {
             }
         })
         .then((Post) => {
-            if (userId == Post.UserId ){
+            if (userId == Post.UserId) {
                 if (req.file && Post.image) {
                     const filename = Post.image.split("/images")[1];
                     fs.unlink(`images/${filename}`, (err) => {
                         if (err) {
-                            console.log("failed to delete local image:"+err);
+                            console.log("failed to delete local image:" + err);
                         } else {
-                            console.log('successfully deleted local image');                                
+                            console.log('successfully deleted local image');
                         }
                     });
                     const postObject = req.file ? {
@@ -178,6 +178,9 @@ exports.modifyOnePost = (req, res, next) => {
                 }
             }
         })
+        .catch(error => res.status(400).json({
+            error
+        }))
 };
 
 //Delete one Post

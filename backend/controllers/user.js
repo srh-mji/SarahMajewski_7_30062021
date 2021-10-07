@@ -160,6 +160,10 @@ exports.getAllUsers = (req, res, next) => {
 
 // Update user Account
 exports.updateAccount = (req, res, next) => {
+  const token = req.headers.authorization.split(' ')[1];
+  const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+  const userId = decodedToken.userId;
+
   User.findOne({
       where: {
         id: req.params.id
@@ -182,33 +186,65 @@ exports.updateAccount = (req, res, next) => {
         });
       }
 
-      // add/change profile image 
-      const userObject = req.file ? {
-        ...req.body,
-        image: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
-      } : {
-        ...req.body,
-        image: null
-      }
-
-      User.update({
-          ...userObject,
-          id: req.params.id
-        }, {
-          where: {
-            id: req.params.id
+      if (userId == user.id) {
+        if (req.file && user.image) {
+          const filename = user.image.split("/images")[1];
+          fs.unlink(`images/${filename}`, (err) => {
+            if (err) {
+              console.log("failed to delete local image:" + err);
+            } else {
+              console.log('successfully deleted local image');
+            }
+          });
+          const userObject = req.file ? {
+            ...req.body,
+            image: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
+          } : {
+            ...req.body,
+            image: user.image
           }
-        })
-        .then(() => res.status(200).json({
-          message: "User modifié !"
-        }))
-        .catch(error => res.status(400).json({
-          error
-        }))
+          User.update({
+              ...userObject,
+              id: req.params.id
+            }, {
+              where: {
+                id: req.params.id
+              }
+            })
+            .then(() => res.status(200).json({
+              message: "User modifié !"
+            }))
+            .catch(error => res.status(400).json({
+              error
+            }))
+        } else {
+          const userObject = req.file ? {
+            ...req.body,
+            image: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`
+          } : {
+            ...req.body,
+            image: user.image
+          }
+          User.update({
+              ...userObject,
+              id: req.params.id
+            }, {
+              where: {
+                id: req.params.id
+              }
+            })
+            .then(() => res.status(200).json({
+              message: "User modifié !"
+            }))
+            .catch(error => res.status(400).json({
+              error
+            }))
+        }
+      }
     })
     .catch(error => res.status(400).json({
       error
-    }));
+    }))
 };
 
 // Delete user account
