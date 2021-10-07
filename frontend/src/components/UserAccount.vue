@@ -77,9 +77,7 @@
                         }
                     })
                     .then(res => {
-                        this.user = res.data;
-                        console.log(this.user)
-                    })
+                        this.user = res.data;                    })
             },
             deleteAccount(userId) {
                 axios.delete(`http://localhost:3000/api/user/account/${userId}`, {

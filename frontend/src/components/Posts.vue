@@ -1,19 +1,19 @@
 <template>
   <div>
     <h2>Messages publiés</h2>
-    <v-layout wrap>
+    <v-layout class="d-flex flex-column justify-center flex-nowrap" >
       <v-flex v-for="post in posts" :key="post.id" :id="'postId-'+post.id">
-        <v-card class="pa-4 ma-4" max-width="500">
+        <v-card class="pa-4 ma-6 mx-auto" max-width="500">
 
           <v-card-title>
-            <v-avatar size="36px">
+            <v-avatar size="36px" class="mr-2">
               <v-img v-if="post.User.image" alt="Avatar" :src="post.User.image">
               </v-img>
               <v-icon dark v-else color="grey lighten-1">
                 mdi-account-circle
               </v-icon>
             </v-avatar>
-            <span class="post-userName">Publié par {{post.User.name}}</span>
+            <span class="post-userName body-1 text-lg-h6">Publié par {{post.User.name}}</span>
           </v-card-title>
 
           <v-card-text>
@@ -136,7 +136,6 @@
           })
           .then(res => {
             this.posts = res.data;
-            console.log(this.posts)
           })
       },
 
