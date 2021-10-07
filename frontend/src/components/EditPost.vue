@@ -3,7 +3,7 @@
         <h2>Modifier votre message {{user.name}} !</h2>
         <v-layout>
             <v-flex>
-                <v-card class="mx-auto ma-10" max-width="400">
+                <v-card class="pa-4 pb-8 ma-6 mx-auto" max-width="500">
                     <v-card-title>
                     <v-avatar size="36px">
                         <v-img v-if="user.image" alt="Avatar" :src="user.image">
@@ -28,7 +28,7 @@
                     :max-width="400" class="mx-auto pb-5">
                     </v-img>
                 </v-card>
-                <v-form class="pa-2 formEditPost" @submit.prevent="modifyOnePost(post.id)"
+                <v-form class="pa-2 mb-8 formEditPost" @submit.prevent="modifyOnePost(post.id)"
                 >
                         <v-textarea
                             filled
